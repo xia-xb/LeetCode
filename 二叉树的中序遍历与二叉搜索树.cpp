@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-22 22:44:08
- * @LastEditTime: 2021-04-23 22:42:56
+ * @LastEditTime: 2021-04-25 22:13:06
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\二叉树的中序遍历与二叉搜索树.cpp
@@ -230,5 +230,303 @@ public:
         }
         inorder(root);
         return res;
+    }
+};
+
+/* 173题二叉搜索树迭代器 */
+/* 中序遍历 */
+class BSTIterator {
+public:
+    vector<TreeNode*> vec;
+    int position = 0;
+    BSTIterator(TreeNode* root) {
+        if (root == nullptr) {
+            return;
+        }
+        stack<TreeNode*> stk;
+        while (!stk.empty() || root != nullptr) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            vec.push_back(root);
+            root = root->right;
+        }
+    }
+
+    int next() {
+        int pos = position;
+        position++;
+        return vec[pos]->val;
+    }
+
+    bool hasNext() { return position < vec.size(); }
+};
+
+/* 669题修剪二叉搜索树 */
+/* 递归 */
+class Solution {
+public:
+    TreeNode* trimBST(TreeNode* root, int low, int high) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->val < low) {
+            return trimBST(root->right, low, high);
+        } else if (root->val > high) {
+            return trimBST(root->left, low, high);
+        } else {
+            root->left = trimBST(root->left, low, high);
+            root->right = trimBST(root->right, low, high);
+            return root;
+        }
+    }
+};
+
+/* 450题删除二叉搜索树中的节点 */
+/* 递归，需要实现删除最小结点，以及寻找最小结点 */
+class Solution {
+public:
+    TreeNode* findmin(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->left == nullptr) {
+            return root;
+        }
+        return findmin(root->left);
+    }
+    TreeNode* findmax(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        while (root->right != nullptr) {
+            root = root->right;
+        }
+        return root;
+    }
+    TreeNode* deletedmin(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->left == nullptr) {
+            TreeNode* tmp = root->right;
+            delete root;
+            return tmp;
+        } else {
+            root->left = deletedmin(root->left);
+            return root;
+        }
+    }
+    TreeNode* deletemax(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->right == nullptr) {
+            TreeNode* tmp = root->left;
+            delete root;
+            return tmp;
+        } else {
+            root->right = deletemax(root->right);
+            return root;
+        }
+    }
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->val > key) {
+            root->left = deleteNode(root->left, key);
+        } else if (root->val < key) {
+            root->right = deleteNode(root->right, key);
+        } else {
+            if (root->left == nullptr) {
+                TreeNode* tmp = root->right;
+                delete root;
+                root = tmp;
+            } else if (root->right == nullptr) {
+                TreeNode* tmp = root->left;
+                delete root;
+                root = tmp;
+            } else {
+                root->val = findmin(root->right)->val;
+                root->right = deletedmin(root->right);
+            }
+        }
+        return root;
+    }
+};
+/* 删除最大结点，寻找最大节点 */
+class Solution {
+public:
+    TreeNode* findmin(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->left == nullptr) {
+            return root;
+        }
+        return findmin(root->left);
+    }
+    TreeNode* findmax(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        while (root->right != nullptr) {
+            root = root->right;
+        }
+        return root;
+    }
+    TreeNode* deletedmin(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->left == nullptr) {
+            TreeNode* tmp = root->right;
+            delete root;
+            return tmp;
+        } else {
+            root->left = deletedmin(root->left);
+            return root;
+        }
+    }
+    TreeNode* deletemax(TreeNode* root) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->right == nullptr) {
+            TreeNode* tmp = root->left;
+            delete root;
+            return tmp;
+        } else {
+            root->right = deletemax(root->right);
+            return root;
+        }
+    }
+    TreeNode* deleteNode(TreeNode* root, int key) {
+        if (root == nullptr) {
+            return root;
+        }
+        if (root->val > key) {
+            root->left = deleteNode(root->left, key);
+        } else if (root->val < key) {
+            root->right = deleteNode(root->right, key);
+        } else {
+            if (root->left == nullptr) {
+                TreeNode* tmp = root->right;
+                delete root;
+                root = tmp;
+            } else if (root->right == nullptr) {
+                TreeNode* tmp = root->left;
+                delete root;
+                root = tmp;
+            } else {
+                root->val = findmax(root->left)->val;
+                root->left = deletemax(root->left);
+            }
+        }
+        return root;
+    }
+};
+
+
+/* 110题平衡二叉树 */
+/* 递归 */
+class Solution {
+public:
+    int high(TreeNode* root){
+        if(root==nullptr){return 0;}
+        return max(high(root->left),high(root->right))+1;
+    }
+    bool isBalanced(TreeNode* root) {
+        if(root==nullptr){return true;}
+        return isBalanced(root->left)&&isBalanced(root->right)&&(abs(high(root->left)-high(root->right))<=1);
+    }
+};
+/* 自底向上，避免重复计算子树高度 */
+class Solution {
+public:
+    int height(TreeNode* root){
+        if(root==nullptr){return 0;}
+        int leftheight=height(root->left);
+        int rightheight=height(root->right);
+        if(leftheight==-1 || rightheight==-1 || abs(leftheight-rightheight)>1){
+            return -1;
+        }else{
+            return max(leftheight,rightheight)+1;
+        }
+    }
+    bool isBalanced(TreeNode* root) {
+        return height(root)!=-1;
+    }
+};
+
+
+/* 108题将有序数组转换为二叉搜索树 */
+/* 平衡二叉树，递归 */
+class Solution {
+public:
+    TreeNode* creatBST(vector<int>nums,int low,int high){
+        int length=high-low+1;
+        if(length<=0){
+            return nullptr;
+        }else if(length==1){
+            return new TreeNode(nums[low],nullptr,nullptr);
+        }else if(length==2){
+            TreeNode* l=new TreeNode(nums[low],nullptr,nullptr);
+            return new TreeNode(nums[high],l,nullptr);
+        }else if(length==3){
+            TreeNode* l=new TreeNode(nums[low],nullptr,nullptr);
+            TreeNode* h=new TreeNode(nums[high],nullptr,nullptr);
+            return new TreeNode(nums[low+1],l,h);
+        }else{
+            TreeNode* l=creatBST(nums,low,low+length/2-1);
+            TreeNode* h=creatBST(nums,low+length/2+1,high);
+            return new TreeNode(nums[low+length/2],l,h); 
+        }
+    }
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        return creatBST(nums,0,nums.size()-1);
+    }
+};
+/* 递归 */
+class Solution {
+public:
+    TreeNode* creatBST(vector<int>nums,int low,int high){
+        if(low>high){return nullptr;}
+        int mid=(low+high)/2;
+        TreeNode* root=new TreeNode(nums[mid]);
+        root->left=creatBST(nums,low,mid-1);
+        root->right=creatBST(nums,mid+1,high);
+        return root;
+    }
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        return creatBST(nums,0,nums.size()-1);
+    }
+};
+
+
+/* 109题有序链表转换二叉搜索树 */
+/* 将链表存到数组 */
+class Solution {
+public:
+    TreeNode* creatBST(vector<int>vec,int low,int high){
+        if(low>high){return nullptr;}
+        int mid=(low+high)/2;
+        TreeNode* root=new TreeNode(vec[mid]);
+        root->left=creatBST(vec,low,mid-1);
+        root->right=creatBST(vec,mid+1,high);
+        return root;
+    }
+    TreeNode* sortedListToBST(ListNode* head) {
+        if(head==nullptr){return nullptr;}
+        vector<int>vec;
+        while(head!=nullptr){
+            vec.push_back(head->val);
+            head=head->next;
+        }
+        return creatBST(vec,0,vec.size()-1);
     }
 };
