@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-04-22 22:44:08
- * @LastEditTime: 2021-04-25 22:13:06
+ * @LastEditTime: 2021-04-25 23:12:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\二叉树的中序遍历与二叉搜索树.cpp
@@ -431,102 +431,144 @@ public:
     }
 };
 
-
 /* 110题平衡二叉树 */
 /* 递归 */
 class Solution {
 public:
-    int high(TreeNode* root){
-        if(root==nullptr){return 0;}
-        return max(high(root->left),high(root->right))+1;
+    int high(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        return max(high(root->left), high(root->right)) + 1;
     }
     bool isBalanced(TreeNode* root) {
-        if(root==nullptr){return true;}
-        return isBalanced(root->left)&&isBalanced(root->right)&&(abs(high(root->left)-high(root->right))<=1);
+        if (root == nullptr) {
+            return true;
+        }
+        return isBalanced(root->left) && isBalanced(root->right) &&
+               (abs(high(root->left) - high(root->right)) <= 1);
     }
 };
 /* 自底向上，避免重复计算子树高度 */
 class Solution {
 public:
-    int height(TreeNode* root){
-        if(root==nullptr){return 0;}
-        int leftheight=height(root->left);
-        int rightheight=height(root->right);
-        if(leftheight==-1 || rightheight==-1 || abs(leftheight-rightheight)>1){
+    int height(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        int leftheight = height(root->left);
+        int rightheight = height(root->right);
+        if (leftheight == -1 || rightheight == -1 ||
+            abs(leftheight - rightheight) > 1) {
             return -1;
-        }else{
-            return max(leftheight,rightheight)+1;
+        } else {
+            return max(leftheight, rightheight) + 1;
         }
     }
-    bool isBalanced(TreeNode* root) {
-        return height(root)!=-1;
-    }
+    bool isBalanced(TreeNode* root) { return height(root) != -1; }
 };
-
 
 /* 108题将有序数组转换为二叉搜索树 */
 /* 平衡二叉树，递归 */
 class Solution {
 public:
-    TreeNode* creatBST(vector<int>nums,int low,int high){
-        int length=high-low+1;
-        if(length<=0){
+    TreeNode* creatBST(vector<int> nums, int low, int high) {
+        int length = high - low + 1;
+        if (length <= 0) {
             return nullptr;
-        }else if(length==1){
-            return new TreeNode(nums[low],nullptr,nullptr);
-        }else if(length==2){
-            TreeNode* l=new TreeNode(nums[low],nullptr,nullptr);
-            return new TreeNode(nums[high],l,nullptr);
-        }else if(length==3){
-            TreeNode* l=new TreeNode(nums[low],nullptr,nullptr);
-            TreeNode* h=new TreeNode(nums[high],nullptr,nullptr);
-            return new TreeNode(nums[low+1],l,h);
-        }else{
-            TreeNode* l=creatBST(nums,low,low+length/2-1);
-            TreeNode* h=creatBST(nums,low+length/2+1,high);
-            return new TreeNode(nums[low+length/2],l,h); 
+        } else if (length == 1) {
+            return new TreeNode(nums[low], nullptr, nullptr);
+        } else if (length == 2) {
+            TreeNode* l = new TreeNode(nums[low], nullptr, nullptr);
+            return new TreeNode(nums[high], l, nullptr);
+        } else if (length == 3) {
+            TreeNode* l = new TreeNode(nums[low], nullptr, nullptr);
+            TreeNode* h = new TreeNode(nums[high], nullptr, nullptr);
+            return new TreeNode(nums[low + 1], l, h);
+        } else {
+            TreeNode* l = creatBST(nums, low, low + length / 2 - 1);
+            TreeNode* h = creatBST(nums, low + length / 2 + 1, high);
+            return new TreeNode(nums[low + length / 2], l, h);
         }
     }
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        return creatBST(nums,0,nums.size()-1);
+        return creatBST(nums, 0, nums.size() - 1);
     }
 };
 /* 递归 */
 class Solution {
 public:
-    TreeNode* creatBST(vector<int>nums,int low,int high){
-        if(low>high){return nullptr;}
-        int mid=(low+high)/2;
-        TreeNode* root=new TreeNode(nums[mid]);
-        root->left=creatBST(nums,low,mid-1);
-        root->right=creatBST(nums,mid+1,high);
+    TreeNode* creatBST(vector<int> nums, int low, int high) {
+        if (low > high) {
+            return nullptr;
+        }
+        int mid = (low + high) / 2;
+        TreeNode* root = new TreeNode(nums[mid]);
+        root->left = creatBST(nums, low, mid - 1);
+        root->right = creatBST(nums, mid + 1, high);
         return root;
     }
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        return creatBST(nums,0,nums.size()-1);
+        return creatBST(nums, 0, nums.size() - 1);
     }
 };
-
 
 /* 109题有序链表转换二叉搜索树 */
 /* 将链表存到数组 */
 class Solution {
 public:
-    TreeNode* creatBST(vector<int>vec,int low,int high){
-        if(low>high){return nullptr;}
-        int mid=(low+high)/2;
-        TreeNode* root=new TreeNode(vec[mid]);
-        root->left=creatBST(vec,low,mid-1);
-        root->right=creatBST(vec,mid+1,high);
+    TreeNode* creatBST(vector<int> vec, int low, int high) {
+        if (low > high) {
+            return nullptr;
+        }
+        int mid = (low + high) / 2;
+        TreeNode* root = new TreeNode(vec[mid]);
+        root->left = creatBST(vec, low, mid - 1);
+        root->right = creatBST(vec, mid + 1, high);
         return root;
     }
     TreeNode* sortedListToBST(ListNode* head) {
-        if(head==nullptr){return nullptr;}
-        vector<int>vec;
-        while(head!=nullptr){
-            vec.push_back(head->val);
-            head=head->next;
+        if (head == nullptr) {
+            return nullptr;
         }
-        return creatBST(vec,0,vec.size()-1);
+        vector<int> vec;
+        while (head != nullptr) {
+            vec.push_back(head->val);
+            head = head->next;
+        }
+        return creatBST(vec, 0, vec.size() - 1);
+    }
+};
+/* 分治，递归 */
+/* 注意递归后干好指向中间结点，主要原因是左子树递归left,mid-1范围内，
+且递归跳出的条件为left>right，从而left>mid-1,即left=mid，mid即为head */
+class Solution {
+public:
+    int getLength(ListNode* head) {
+        int length = 0;
+        while (head != nullptr) {
+            length++;
+            head = head->next;
+        }
+        return length;
+    }
+    TreeNode* creatBST(ListNode*& head, int left, int right) {
+        if (left > right) {
+            return nullptr;
+        }
+        int mid = (left + right) / 2;
+        TreeNode* root = new TreeNode();
+        root->left = creatBST(head, left, mid - 1);
+        root->val = head->val;
+        head = head->next;
+        root->right = creatBST(head, mid + 1, right);
+        return root;
+    }
+    TreeNode* sortedListToBST(ListNode* head) {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        int length = getLength(head);
+        return creatBST(head, 0, length - 1);
     }
 };
