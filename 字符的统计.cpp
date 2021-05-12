@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-11 23:11:21
- * @LastEditTime: 2021-05-11 23:26:28
+ * @LastEditTime: 2021-05-12 22:20:25
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\字符的统计.cpp
@@ -44,6 +44,47 @@ public:
                 res = t[i];
                 break;
             }
+        }
+        return res;
+    }
+};
+
+/* 242题有效的字母异位词 */
+/* 通过数组记录字符个数 */
+class Solution {
+public:
+    bool isAnagram(string s, string t) {
+        vector<int> countS(26, 0), countT(26, 0);
+        for (int i = 0; i < s.size(); i++) {
+            countS[s[i] - 'a']++;
+        }
+        for (int i = 0; i < t.size(); i++) {
+            countT[t[i] - 'a']++;
+        }
+        for (int i = 0; i < 26; i++) {
+            if (countS[i] != countT[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+/* 49题字母异位词分组 */
+/* 排序，哈希表统计 */
+class Solution {
+public:
+    vector<vector<string>> groupAnagrams(vector<string>& strs) {
+        unordered_map<string, vector<string>> mp;
+        for (int i = 0; i < strs.size(); i++) {
+            string str = strs[i];
+            sort(str.begin(), str.end());
+            mp[str].push_back(strs[i]);
+        }
+        vector<vector<string>> res;
+        for (unordered_map<string, vector<string>>::iterator it = mp.begin();
+             it != mp.end(); it++) {
+            res.push_back(it->second);
         }
         return res;
     }
