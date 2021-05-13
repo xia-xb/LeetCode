@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-12 23:37:27
- * @LastEditTime: 2021-05-12 23:39:02
+ * @LastEditTime: 2021-05-13 22:30:24
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\链表的删除.cpp
@@ -44,5 +44,58 @@ public:
         p->next = q->next;
         delete q;
         return newhead->next;
+    }
+};
+
+/* 203题移除链表元素 */
+/* 直接删除 */
+class Solution {
+public:
+    ListNode* removeElements(ListNode* head, int val) {
+        ListNode* newhead = new ListNode(0, head);
+        ListNode* p = newhead;
+        ListNode* tmp;
+        while (p->next) {
+            tmp = p->next;
+            if (tmp->val == val) {
+                p->next = tmp->next;
+                delete tmp;
+            } else {
+                p = p->next;
+            }
+            if (!p) {
+                break;
+            }
+        }
+        return newhead->next;
+    }
+};
+
+/* 237题删除链表中的节点 */
+/* 从待删除节点开始删除 */
+class Solution {
+public:
+    void deleteNode(ListNode* node) {
+        ListNode* tmp;
+        while (node && node->next) {
+            tmp = node->next;
+            node->val = tmp->val;
+            if (!tmp->next) {
+                node->next = NULL;
+                break;
+            }
+            node = tmp;
+        }
+    }
+};
+/* 将待删除节点复制为其下一个节点 */
+/* 删除下一个节点即可 */
+class Solution {
+public:
+    void deleteNode(ListNode* node) {
+        ListNode* tmp = node->next;
+        node->val = tmp->val;
+        node->next = tmp->next;
+        delete tmp;
     }
 };
