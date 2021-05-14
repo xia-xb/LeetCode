@@ -89,3 +89,47 @@ public:
         return newhead;
     }
 };
+
+
+/* 92题反转链表II */
+/* 直接反转，注意保留反转的第一个节点用于连接后面节点 */
+class Solution {
+public:
+    ListNode* reverseBetween(ListNode* head, int left, int right) {
+        ListNode* newhead=new ListNode(0,head);
+        ListNode* pre=newhead;
+        int i;
+        for(i=0;i<left-1;i++){
+            pre=pre->next;
+        }
+        ListNode* p=pre->next;
+        ListNode* q=p;
+        ListNode* tmp;
+        for(;i<right;i++){
+            tmp=p->next;
+            p->next=pre->next;
+            pre->next=p;
+            p=tmp;
+        }
+        q->next=p;
+        return newhead->next;
+    }
+};
+
+
+/* 206题反转链表 */
+/* 反转链表，注意使用头插法 */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* newhead=new ListNode;
+        ListNode* tmp;
+        while(head){
+            tmp=head->next;
+            head->next=newhead->next;
+            newhead->next=head;
+            head=tmp;
+        }
+        return newhead->next;
+    }
+};
