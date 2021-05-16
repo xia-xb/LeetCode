@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-14 23:09:46
- * @LastEditTime: 2021-05-15 22:34:31
+ * @LastEditTime: 2021-05-16 22:20:14
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\哈希表的查找、插入及删除.cpp
@@ -162,7 +162,7 @@ public:
     }
 };
 
-/* 291题单词规律 */
+/* 290题单词规律 */
 /* 哈希表建立联系 */
 class Solution {
 public:
@@ -200,5 +200,66 @@ public:
             }
         }
         return i == pattern.size() && j == end;
+    }
+};
+
+/* 532题数组中的k-diff数对 */
+/* 哈希表存储数据 */
+class Solution {
+public:
+    int findPairs(vector<int>& nums, int k) {
+        unordered_map<int, int> mp;
+        for (int i = 0; i < nums.size(); i++) {
+            mp[nums[i]]++;
+        }
+        int res = 0;
+        for (const auto& m : mp) {
+            if (k == 0) {
+                res += m.second > 1;
+            } else {
+                res += mp.count(m.first - k);
+            }
+        }
+        return res;
+    }
+};
+
+/* 205题同构字符串 */
+/* 两个map分别存储字符 */
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        unordered_map<char, char> mp1, mp2;
+        for (int i = 0; i < s.size(); i++) {
+            char c1 = s[i], c2 = t[i];
+            if (mp1.count(c1) && mp2.count(c2)) {
+                if (mp1[c1] != c2 || mp2[c2] != c1) {
+                    return false;
+                }
+            } else if (!mp1.count(c1) && !mp2.count(c2)) {
+                mp1[c1] = c2;
+                mp2[c2] = c1;
+            } else {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+/* 改进if逻辑判断部分 */
+class Solution {
+public:
+    bool isIsomorphic(string s, string t) {
+        unordered_map<char, char> mp1, mp2;
+        for (int i = 0; i < s.size(); i++) {
+            char c1 = s[i], c2 = t[i];
+            if ((mp1.count(c1) && mp1[c1] != c2) ||
+                (mp2.count(c2) && mp2[c2] != c1)) {
+                return false;
+            }
+            mp1[c1] = c2;
+            mp2[c2] = c1;
+        }
+        return true;
     }
 };
