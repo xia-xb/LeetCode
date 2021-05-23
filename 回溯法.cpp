@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-22 22:45:59
+ * @LastEditTime: 2021-05-23 22:17:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -132,6 +132,36 @@ public:
     int totalNQueens(int n) {
         vector<string> board(n, string(n, '.'));
         trackback(board, 0);
+        return count;
+    }
+};
+
+/* 526题优美排列 */
+/* 回溯法，注意判断整数是否已经使用 */
+/* 除了使用哈希表，还由于候选数是确定的 */
+/* 可以考虑数组，从而减少内存 */
+class Solution {
+public:
+    int count = 0;
+    void trackback(int n, vector<bool>& visited, int index) {
+        if (index > n) {
+            count++;
+            return;
+        }
+        for (int i = 1; i <= n; i++) {
+            if (visited[i]) {
+                continue;
+            }
+            if (i % index == 0 || index % i == 0) {
+                visited[i] = true;
+                trackback(n, visited, index + 1);
+                visited[i] = false;
+            }
+        }
+    }
+    int countArrangement(int n) {
+        vector<bool> visited(n, false);
+        trackback(n, visited, 1);
         return count;
     }
 };
