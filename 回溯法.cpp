@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-23 22:17:38
+ * @LastEditTime: 2021-05-24 23:04:47
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -163,5 +163,175 @@ public:
         vector<bool> visited(n, false);
         trackback(n, visited, 1);
         return count;
+    }
+};
+
+/* 39题组合总和 */
+/* 回溯法 */
+/* 注意先将数组candidates排序，当和大于target时 */
+/* 该组合不会再满足，直接去除 */
+/* 实际情况是，不排序也可以😒😒😒😒 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& candidates, int target,
+                   vector<int>& combination, int sum, int position) {
+        if (sum == target) {
+            res.push_back(combination);
+            return;
+        } else if (sum > target) {
+            return;
+        }
+        for (int i = position; i < candidates.size(); i++) {
+            combination.push_back(candidates[i]);
+            trackback(candidates, target, combination, sum + candidates[i], i);
+            combination.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<int> combination;
+        trackback(candidates, target, combination, 0, 0);
+        return res;
+    }
+};
+/* 对上面代码优化 */
+/* 不使用参数sum，直接利用target */
+/* target=0即为满足，且注意是值传递，不是引用传递 */
+/* 所以在递归前后，不用对target做改变，直接参数改变 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& candidates, int target,
+                   vector<int>& combination, int position) {
+        if (target == 0) {
+            res.push_back(combination);
+            return;
+        } else if (target < 0) {
+            return;
+        }
+        for (int i = position; i < candidates.size(); i++) {
+            combination.push_back(candidates[i]);
+            trackback(candidates, target - candidates[i], combination, i);
+            combination.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<int> combination;
+        trackback(candidates, target, combination, 0);
+        return res;
+    }
+};
+/* 剪枝 */
+/* 首先对将数组candidates排序 */
+/* 当target-candidites[position]<0时 */
+/* 由于排序，后面的选择中其值也小于0，不用循环 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& candidates, int target,
+                   vector<int>& combination, int position) {
+        if (target == 0) {
+            res.push_back(combination);
+            return;
+        } else if (target < 0) {
+            return;
+        }
+        for (int i = position; i < candidates.size(); i++) {
+            combination.push_back(candidates[i]);
+            trackback(candidates, target - candidates[i], combination, i);
+            combination.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<int> combination;
+        trackback(candidates, target, combination, 0);
+        return res;
+    }
+};
+
+/* 40题组合总和II */
+/* 回溯法 */
+/* 与39题不同的是，每个元素只能使用1次 */
+/* 同时去除重复组合 */
+/* 注意，在for循环中对应的元素位于决策树的同一层 */
+/* 去除重复组合，只要同一层中，相同元素只出现一次即可 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& candidates, int target, vector<int> combination,
+                   int index) {
+        if (target == 0) {
+            res.push_back(combination);
+            return;
+        } else if (target < 0) {
+            return;
+        }
+        for (int i = index;
+             i < candidates.size() && target - candidates[i] >= 0; i++) {
+            if (i > index && candidates[i] == candidates[i - 1]) {
+                continue;
+            }
+            combination.push_back(candidates[i]);
+            trackback(candidates, target - candidates[i], combination, i + 1);
+            combination.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        sort(candidates.begin(), candidates.end());
+        vector<int> combination;
+        trackback(candidates, target, combination, 0);
+        return res;
+    }
+};
+
+/* 46题全排列 */
+/* 回溯法，注意由于是排列 */
+/* 通过设置数组visited判断元素是否使用 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, vector<int>& arrangement,
+                   vector<bool>& visited) {
+        if (arrangement.size() == nums.size()) {
+            res.push_back(arrangement);
+            return;
+        }
+        for (int i = 0; i < nums.size(); i++) {
+            if (visited[i]) {
+                continue;
+            }
+            arrangement.push_back(nums[i]);
+            visited[i] = true;
+            trackback(nums, arrangement, visited);
+            arrangement.pop_back();
+            visited[i] = false;
+        }
+    }
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<bool> visited(nums.size(), false);
+        vector<int> arrangement;
+        trackback(nums, arrangement, visited);
+        return res;
+    }
+};
+/* 直接在原数组上交换元素，实现排列 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, int index) {
+        if (index == nums.size()) {
+            res.push_back(nums);
+            return;
+        }
+        for (int i = index; i < nums.size(); i++) {
+            swap(nums[index], nums[i]);
+            trackback(nums, index + 1);
+            swap(nums[index], nums[i]);
+        }
+    }
+    vector<vector<int>> permute(vector<int>& nums) {
+        trackback(nums, 0);
+        return res;
     }
 };
