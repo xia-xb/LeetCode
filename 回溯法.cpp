@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-24 23:04:47
+ * @LastEditTime: 2021-05-25 23:28:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -335,3 +335,67 @@ public:
         return res;
     }
 };
+
+/* 47题全排列II */
+/* 回溯法，直接在原数组上交换，实现排列 */
+/* 需要注意的是，包含重复数字，去除重复排列时 */
+/* 不能简单通过排序，之后跳过相邻相等的元素 */
+/* 原因是由于原数组上交换，会改变其有序状态 */
+/* 通过哈希表即可 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, int index) {
+        if (index == nums.size()) {
+            res.push_back(nums);
+            return;
+        }
+        unordered_set<int> st;
+        for (int i = index; i < nums.size(); i++) {
+            if (st.count(nums[i])) {
+                continue;
+            }
+            st.insert(nums[i]);
+            swap(nums[i], nums[index]);
+            trackback(nums, index + 1);
+            swap(nums[i], nums[index]);
+        }
+    }
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        trackback(nums, 0);
+        return res;
+    }
+};
+/* 避免上面方法中需要哈希表 */
+/* 直接新建新数组保存排列 */
+/* 同时设置visited数组记录是否使用 */
+public:
+vector<vector<int>> res;
+void trackback(vector<int>& nums, vector<int>& arrangement,
+               vector<bool> visited) {
+    if (arrangement.size() == nums.size()) {
+        res.push_back(arrangement);
+        return;
+    }
+    for (int i = 0; i < nums.size(); i++) {
+        if (visited[i] ||
+            (i > 0 && nums[i] == nums[i - 1] && !visited[i - 1])) {
+            continue;
+        }
+        visited[i] = true;
+        arrangement.push_back(nums[i]);
+        trackback(nums, arrangement, visited);
+        arrangement.pop_back();
+        visited[i] = false;
+    }
+}
+vector<vector<int>> permuteUnique(vector<int>& nums) {
+    sort(nums.begin(), nums.end());
+    vector<bool> visited(nums.size(), false);
+    vector<int> arrangement;
+    trackback(nums, arrangement, visited);
+    return res;
+}
+}
+;
