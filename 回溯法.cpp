@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-25 23:28:57
+ * @LastEditTime: 2021-05-26 23:56:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -166,6 +166,7 @@ public:
     }
 };
 
+
 /* 39题组合总和 */
 /* 回溯法 */
 /* 注意先将数组candidates排序，当和大于target时 */
@@ -250,6 +251,7 @@ public:
     }
 };
 
+
 /* 40题组合总和II */
 /* 回溯法 */
 /* 与39题不同的是，每个元素只能使用1次 */
@@ -284,6 +286,7 @@ public:
         return res;
     }
 };
+
 
 /* 46题全排列 */
 /* 回溯法，注意由于是排列 */
@@ -335,6 +338,7 @@ public:
         return res;
     }
 };
+
 
 /* 47题全排列II */
 /* 回溯法，直接在原数组上交换，实现排列 */
@@ -396,6 +400,129 @@ vector<vector<int>> permuteUnique(vector<int>& nums) {
     vector<int> arrangement;
     trackback(nums, arrangement, visited);
     return res;
-}
-}
-;
+};
+
+
+/* 77题组合 */
+/* 回溯法，注意剪枝条件的推导 */
+class Solution {
+public:
+    vector<vector<int>>res;
+    void track(int n,int k,vector<int>& path,int index){
+        if(path.size()==k){
+            res.push_back(path);
+            return;
+        }
+        for(int i=index;i<=n+path.size()-k+1;i++){
+            path.push_back(i);
+            track(n,k,path,i+1);
+            path.pop_back();
+        }
+
+    }
+    vector<vector<int>> combine(int n, int k) {
+        vector<int>path;
+        track(n,k,path,1);
+        return res;
+    }
+};
+
+
+/* 78题子集 */
+/* 回溯法 */
+class Solution {
+public:
+    vector<vector<int>>res;
+    void trackback(vector<int>& nums, vector<int>& path,int index){
+        res.push_back(path);
+        if(index==nums.size()){return;}
+        for(int i=index;i<nums.size();i++){
+            path.push_back(nums[i]);
+            trackback(nums,path,i+1);
+            path.pop_back();
+        }
+    }
+    vector<vector<int>> subsets(vector<int>& nums) {
+        vector<int>path;
+        trackback(nums,path,0);
+        return res;
+    }
+};
+
+
+/* 90题子集II */
+/* 回溯法，注意同一层循环中同意元素只使用一次 */
+class Solution {
+public:
+    vector<vector<int>>res;
+    void trackback(vector<int>& nums,vector<int>& path, int index){
+        res.push_back(path);
+        if(index==nums.size()){return;}
+        for(int i=index;i<nums.size();i++){
+            if(i>index && nums[i]==nums[i-1]){continue;}
+            path.push_back(nums[i]);
+            trackback(nums,path,i+1);
+            path.pop_back();
+        }
+    }
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        vector<int>path;
+        trackback(nums,path,0);
+        return res;
+    }
+};
+
+
+/* 单词搜索 */
+/* 回溯法 */
+class Solution {
+public:
+    bool res=false;
+    void trackback(vector<vector<char>>& board,vector<vector<int>>& visited,string word,int length,int row,int col){
+        if(length==word.size()){
+            res=true;
+            return;
+        }
+        if(row-1>=0 && visited[row-1][col]==0 && board[row-1][col]==word[length]){
+            visited[row-1][col]=1;
+            trackback(board,visited,word,length+1,row-1,col);
+            visited[row-1][col]=0;
+        }
+        if(res){return;}
+        if(row+1<board.size() && visited[row+1][col]==0 && board[row+1][col]==word[length]){
+            visited[row+1][col]=1;
+            trackback(board,visited,word,length+1,row+1,col);
+            visited[row+1][col]=0;
+        }
+        if(res){return;}
+        if(col-1>=0 && visited[row][col-1]==0 && board[row][col-1]==word[length]){
+            visited[row][col-1]=1;
+            trackback(board,visited,word,length+1,row,col-1);
+            visited[row][col-1]=0;
+        }
+        if(res){return;}
+        if(col+1<board[row].size() && visited[row][col+1]==0 && board[row][col+1]==word[length]){
+            visited[row][col+1]=1;
+            trackback(board,visited,word,length+1,row,col+1);
+            visited[row][col+1]=0;
+        }
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        if(board.empty()){return false;}
+        vector<vector<int>>visited(board.size(),vector<int>(board[0].size(),0));
+        for(int row=0;row<board.size();row++){
+            for(int col=0;col<board[row].size();col++){
+                if(board[row][col]==word[0]){
+                    visited[row][col]=1;
+                    trackback(board,visited,word,1,row,col);
+                    visited[row][col]=0;
+                }
+                if(res){break;}
+            }
+            if(res){break;}
+        }
+        return res;        
+
+    }
+};
