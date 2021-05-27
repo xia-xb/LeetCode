@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-26 23:56:34
+ * @LastEditTime: 2021-05-27 23:00:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -166,7 +166,6 @@ public:
     }
 };
 
-
 /* 39题组合总和 */
 /* 回溯法 */
 /* 注意先将数组candidates排序，当和大于target时 */
@@ -251,7 +250,6 @@ public:
     }
 };
 
-
 /* 40题组合总和II */
 /* 回溯法 */
 /* 与39题不同的是，每个元素只能使用1次 */
@@ -286,7 +284,6 @@ public:
         return res;
     }
 };
-
 
 /* 46题全排列 */
 /* 回溯法，注意由于是排列 */
@@ -338,7 +335,6 @@ public:
         return res;
     }
 };
-
 
 /* 47题全排列II */
 /* 回溯法，直接在原数组上交换，实现排列 */
@@ -402,127 +398,312 @@ vector<vector<int>> permuteUnique(vector<int>& nums) {
     return res;
 };
 
-
 /* 77题组合 */
 /* 回溯法，注意剪枝条件的推导 */
 class Solution {
 public:
-    vector<vector<int>>res;
-    void track(int n,int k,vector<int>& path,int index){
-        if(path.size()==k){
+    vector<vector<int>> res;
+    void track(int n, int k, vector<int>& path, int index) {
+        if (path.size() == k) {
             res.push_back(path);
             return;
         }
-        for(int i=index;i<=n+path.size()-k+1;i++){
+        for (int i = index; i <= n + path.size() - k + 1; i++) {
             path.push_back(i);
-            track(n,k,path,i+1);
+            track(n, k, path, i + 1);
             path.pop_back();
         }
-
     }
     vector<vector<int>> combine(int n, int k) {
-        vector<int>path;
-        track(n,k,path,1);
+        vector<int> path;
+        track(n, k, path, 1);
         return res;
     }
 };
-
 
 /* 78题子集 */
 /* 回溯法 */
 class Solution {
 public:
-    vector<vector<int>>res;
-    void trackback(vector<int>& nums, vector<int>& path,int index){
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, vector<int>& path, int index) {
         res.push_back(path);
-        if(index==nums.size()){return;}
-        for(int i=index;i<nums.size();i++){
+        if (index == nums.size()) {
+            return;
+        }
+        for (int i = index; i < nums.size(); i++) {
             path.push_back(nums[i]);
-            trackback(nums,path,i+1);
+            trackback(nums, path, i + 1);
             path.pop_back();
         }
     }
     vector<vector<int>> subsets(vector<int>& nums) {
-        vector<int>path;
-        trackback(nums,path,0);
+        vector<int> path;
+        trackback(nums, path, 0);
         return res;
     }
 };
-
 
 /* 90题子集II */
 /* 回溯法，注意同一层循环中同意元素只使用一次 */
 class Solution {
 public:
-    vector<vector<int>>res;
-    void trackback(vector<int>& nums,vector<int>& path, int index){
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, vector<int>& path, int index) {
         res.push_back(path);
-        if(index==nums.size()){return;}
-        for(int i=index;i<nums.size();i++){
-            if(i>index && nums[i]==nums[i-1]){continue;}
+        if (index == nums.size()) {
+            return;
+        }
+        for (int i = index; i < nums.size(); i++) {
+            if (i > index && nums[i] == nums[i - 1]) {
+                continue;
+            }
             path.push_back(nums[i]);
-            trackback(nums,path,i+1);
+            trackback(nums, path, i + 1);
             path.pop_back();
         }
     }
     vector<vector<int>> subsetsWithDup(vector<int>& nums) {
-        sort(nums.begin(),nums.end());
-        vector<int>path;
-        trackback(nums,path,0);
+        sort(nums.begin(), nums.end());
+        vector<int> path;
+        trackback(nums, path, 0);
         return res;
     }
 };
 
-
-/* 单词搜索 */
+/* 79题单词搜索 */
 /* 回溯法 */
 class Solution {
 public:
-    bool res=false;
-    void trackback(vector<vector<char>>& board,vector<vector<int>>& visited,string word,int length,int row,int col){
-        if(length==word.size()){
-            res=true;
+    bool res = false;
+    void trackback(vector<vector<char>>& board, vector<vector<int>>& visited,
+                   string word, int length, int row, int col) {
+        if (length == word.size()) {
+            res = true;
             return;
         }
-        if(row-1>=0 && visited[row-1][col]==0 && board[row-1][col]==word[length]){
-            visited[row-1][col]=1;
-            trackback(board,visited,word,length+1,row-1,col);
-            visited[row-1][col]=0;
+        if (row - 1 >= 0 && visited[row - 1][col] == 0 &&
+            board[row - 1][col] == word[length]) {
+            visited[row - 1][col] = 1;
+            trackback(board, visited, word, length + 1, row - 1, col);
+            visited[row - 1][col] = 0;
         }
-        if(res){return;}
-        if(row+1<board.size() && visited[row+1][col]==0 && board[row+1][col]==word[length]){
-            visited[row+1][col]=1;
-            trackback(board,visited,word,length+1,row+1,col);
-            visited[row+1][col]=0;
+        if (res) {
+            return;
         }
-        if(res){return;}
-        if(col-1>=0 && visited[row][col-1]==0 && board[row][col-1]==word[length]){
-            visited[row][col-1]=1;
-            trackback(board,visited,word,length+1,row,col-1);
-            visited[row][col-1]=0;
+        if (row + 1 < board.size() && visited[row + 1][col] == 0 &&
+            board[row + 1][col] == word[length]) {
+            visited[row + 1][col] = 1;
+            trackback(board, visited, word, length + 1, row + 1, col);
+            visited[row + 1][col] = 0;
         }
-        if(res){return;}
-        if(col+1<board[row].size() && visited[row][col+1]==0 && board[row][col+1]==word[length]){
-            visited[row][col+1]=1;
-            trackback(board,visited,word,length+1,row,col+1);
-            visited[row][col+1]=0;
+        if (res) {
+            return;
+        }
+        if (col - 1 >= 0 && visited[row][col - 1] == 0 &&
+            board[row][col - 1] == word[length]) {
+            visited[row][col - 1] = 1;
+            trackback(board, visited, word, length + 1, row, col - 1);
+            visited[row][col - 1] = 0;
+        }
+        if (res) {
+            return;
+        }
+        if (col + 1 < board[row].size() && visited[row][col + 1] == 0 &&
+            board[row][col + 1] == word[length]) {
+            visited[row][col + 1] = 1;
+            trackback(board, visited, word, length + 1, row, col + 1);
+            visited[row][col + 1] = 0;
         }
     }
     bool exist(vector<vector<char>>& board, string word) {
-        if(board.empty()){return false;}
-        vector<vector<int>>visited(board.size(),vector<int>(board[0].size(),0));
-        for(int row=0;row<board.size();row++){
-            for(int col=0;col<board[row].size();col++){
-                if(board[row][col]==word[0]){
-                    visited[row][col]=1;
-                    trackback(board,visited,word,1,row,col);
-                    visited[row][col]=0;
-                }
-                if(res){break;}
-            }
-            if(res){break;}
+        if (board.empty()) {
+            return false;
         }
-        return res;        
+        vector<vector<int>> visited(board.size(),
+                                    vector<int>(board[0].size(), 0));
+        for (int row = 0; row < board.size(); row++) {
+            for (int col = 0; col < board[row].size(); col++) {
+                if (board[row][col] == word[0]) {
+                    visited[row][col] = 1;
+                    trackback(board, visited, word, 1, row, col);
+                    visited[row][col] = 0;
+                }
+                if (res) {
+                    break;
+                }
+            }
+            if (res) {
+                break;
+            }
+        }
+        return res;
+    }
+};
+/* 上述程序框架进行改进，便于理解 */
+class Solution {
+public:
+    vector<pair<int, int>> directions = {{0, -1}, {0, 1}, {-1, 0}, {1, 0}};
+    bool trackback(vector<vector<char>>& board, vector<vector<int>>& visited,
+                   string word, int length, int row, int col) {
+        if (board[row][col] != word[length]) {
+            return false;
+        } else if (length == word.size() - 1) {
+            return true;
+        }
+        visited[row][col] = 1;
+        bool res = false;
+        for (int i = 0; i < 4; i++) {
+            int r = row + directions[i].first, c = col + directions[i].second;
+            if (r >= 0 && r < board.size() && c >= 0 && c < board[0].size() &&
+                visited[r][c] == 0) {
+                res = trackback(board, visited, word, length + 1, r, c);
+            }
+            if (res) {
+                break;
+            }
+        }
+        visited[row][col] = 0;
+        return res;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        if (board.empty()) {
+            return false;
+        }
+        vector<vector<int>> visited(board.size(),
+                                    vector<int>(board[0].size(), 0));
+        for (int row = 0; row < board.size(); row++) {
+            for (int col = 0; col < board[row].size(); col++) {
+                bool res = trackback(board, visited, word, 0, row, col);
+                if (res) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
 
+/* 216题组合总和III */
+/* 回溯法，注意每种组合中不存在重复的数字 */
+/* 注意剪枝 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(int k, vector<int>& path, int index, int n) {
+        if (path.size() == k) {
+            if (n == 0) {
+                res.push_back(path);
+            }
+            return;
+        }
+        for (int i = index; i <= 9; i++) {
+            if (n - i < 0) {
+                break;
+            }
+            path.push_back(i);
+            trackback(k, path, i + 1, n - i);
+            path.pop_back();
+        }
+    }
+    vector<vector<int>> combinationSum3(int k, int n) {
+        vector<int> path;
+        trackback(k, path, 1, n);
+        return res;
+    }
+};
+
+/* 332题重新安排行程 */
+/* 回溯法，注意不是只要找到每一站的最小 */
+/* 需要判断该行程是否可行，即使用完所有飞机票 */
+public:
+vector<string> res;
+bool trackback(vector<vector<string>>& tickets, int ticketUsed,
+               vector<int>& visited) {
+    if (ticketUsed == tickets.size()) {
+        return true;
+    }
+    string start = res.back();
+    map<string, int> nextStationGroup;
+    for (int i = 0; i < tickets.size(); i++) {
+        if (tickets[i][0] == start && !visited[i]) {
+            nextStationGroup.insert(make_pair(tickets[i][1], i));
+        }
+    }
+    for (const auto& s : nextStationGroup) {
+        res.push_back(s.first);
+        visited[s.second] = 1;
+        if (trackback(tickets, ticketUsed + 1, visited)) {
+            return true;
+        }
+        res.pop_back();
+        visited[s.second] = 0;
+    }
+    return false;
+}
+vector<string> findItinerary(vector<vector<string>>& tickets) {
+    res.push_back("JFK");
+    vector<int> visited(tickets.size(), 0);
+    trackback(tickets, 0, visited);
+    return res;
+}
+}
+;
+/* 欧拉图 */
+class Solution {
+public:
+    vector<string> res;
+    unordered_map<string,
+                  priority_queue<string, vector<string>, std::greater<string>>>
+        vec;
+    void dfs(const string& curr) {
+        while (vec.count(curr) && vec[curr].size() > 0) {
+            string tmp = vec[curr].top();
+            vec[curr].pop();
+            dfs(tmp);
+        }
+        res.emplace_back(curr);
+    }
+
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        for (auto& it : tickets) {
+            vec[it[0]].emplace(it[1]);
+        }
+        dfs("JFK");
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};
+
+/* 491题递增子序列 */
+/* 回溯法，注意数组中存在相同数组，需要去除重复 */
+/* 所以每层中相同元素只能使用一次 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, vector<int>& path, int index) {
+        if (path.size() >= 2) {
+            res.push_back(path);
+        }
+        if (index == nums.size()) {
+            return;
+        }
+        set<int> st;
+        for (int i = index; i < nums.size(); i++) {
+            if (st.count(nums[i])) {
+                continue;
+            }
+            st.insert(nums[i]);
+            if (path.empty() || nums[i] >= path.back()) {
+                path.push_back(nums[i]);
+                trackback(nums, path, i + 1);
+                path.pop_back();
+            }
+        }
+    }
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        vector<int> path;
+        trackback(nums, path, 0);
+        return res;
     }
 };
