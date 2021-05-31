@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-27 23:00:49
+ * @LastEditTime: 2021-05-28 22:51:08
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -699,6 +699,36 @@ public:
                 trackback(nums, path, i + 1);
                 path.pop_back();
             }
+        }
+    }
+    vector<vector<int>> findSubsequences(vector<int>& nums) {
+        vector<int> path;
+        trackback(nums, path, 0);
+        return res;
+    }
+};
+/* 剪枝，在遍历过程中直接去除不合法以及重复的子序列 */
+/* 注意在去除重复过程中，只有当当前值不等于上一个值时才能直接跳过 */
+/* 这样相同值，只会出现前后均没有选择，或者前面没有选择后面选择， */
+/* 或者前后都选择 */
+/* 不会出现前面选择后面没有选择，这种情况与上面第2种一样 */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void trackback(vector<int>& nums, vector<int>& path, int index) {
+        if (index == nums.size()) {
+            if (path.size() >= 2) {
+                res.push_back(path);
+            }
+            return;
+        }
+        if (path.empty() || nums[index] >= path.back()) {
+            path.push_back(nums[index]);
+            trackback(nums, path, index + 1);
+            path.pop_back();
+        }
+        if (path.empty() || nums[index] != path.back()) {
+            trackback(nums, path, index + 1);
         }
     }
     vector<vector<int>> findSubsequences(vector<int>& nums) {
