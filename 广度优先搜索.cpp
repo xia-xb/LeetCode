@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-30 21:19:20
- * @LastEditTime: 2021-05-31 23:36:11
+ * @LastEditTime: 2021-06-01 22:26:21
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\广度优先搜索.cpp
@@ -427,5 +427,131 @@ public:
             }
         }
         return res;
+    }
+};
+
+/* 463题岛屿的周长 */
+/* 广度优先搜索 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    int islandPerimeter(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int rowRange = grid.size(), colRange = grid[0].size();
+        int perimeter = 0;
+        queue<pair<int, int>> que;
+        for (int i = 0; i < rowRange; i++) {
+            if (grid[i][0] == 1) {
+                perimeter++;
+            } else if (grid[i][0] == 0) {
+                grid[i][0] = 2;
+                que.push(make_pair(i, 0));
+            }
+            if (grid[i][colRange - 1] == 1) {
+                perimeter++;
+            } else if (grid[i][colRange - 1] == 0) {
+                grid[i][colRange - 1] = 2;
+                que.push(make_pair(i, colRange - 1));
+            }
+        }
+        for (int i = 0; i < colRange; i++) {
+            if (grid[0][i] == 1) {
+                perimeter++;
+            } else if (grid[0][i] == 0) {
+                grid[0][i] = 2;
+                que.push(make_pair(0, i));
+            }
+            if (grid[rowRange - 1][i] == 1) {
+                perimeter++;
+            } else if (grid[rowRange - 1][i] == 0) {
+                grid[rowRange - 1][i] = 2;
+                que.push(make_pair(rowRange - 1, i));
+            }
+        }
+        while (!que.empty()) {
+            auto it = que.front();
+            que.pop();
+            grid[it.first][it.second] = 2;
+            for (int i = 0; i < 4; i++) {
+                int row = it.first + dx[i], col = it.second + dy[i];
+                if (row >= 0 && row < rowRange && col >= 0 && col < colRange) {
+                    if (grid[row][col] == 0) {
+                        grid[row][col] = 2;
+                        que.push(make_pair(row, col));
+                    } else if (grid[row][col] == 1) {
+                        perimeter++;
+                    }
+                }
+            }
+        }
+        return perimeter;
+    }
+};
+/* 通过遍历岛屿，判断相邻元素是否为水域 */
+/* 直接循环 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    int islandPerimeter(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int rowRange = grid.size(), colRange = grid[0].size();
+        int perimeter = 0;
+        for (int row = 0; row < rowRange; row++) {
+            for (int col = 0; col < colRange; col++) {
+                if (grid[row][col] == 1) {
+                    for (int k = 0; k < 4; k++) {
+                        int r = row + dx[k], c = col + dy[k];
+                        if (!(r >= 0 && r < rowRange && c >= 0 &&
+                              c < colRange)) {
+                            perimeter++;
+                        } else if (grid[r][c] == 0) {
+                            perimeter++;
+                        }
+                    }
+                }
+            }
+        }
+        return perimeter;
+    }
+};
+/* 第2种思想，通过递归（深度优先搜索）实现 */
+class Solution {
+public:
+    int perimeter = 0;
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    void dfs(vector<vector<int>>& grid, int row, int col) {
+        grid[row][col] = 2;
+        for (int i = 0; i < 4; i++) {
+            int r = row + dx[i], c = col + dy[i];
+            if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size()) {
+                perimeter++;
+            } else if (grid[r][c] == 0) {
+                perimeter++;
+            } else if (grid[r][c] == 1) {
+                dfs(grid, r, c);
+            }
+        }
+    }
+    int islandPerimeter(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int rowRange = grid.size(), colRange = grid[0].size();
+        for (int row = 0; row < rowRange; row++) {
+            for (int col = 0; col < colRange; col++) {
+                if (grid[row][col] == 1) {
+                    dfs(grid, row, col);
+                    break;
+                }
+            }
+        }
+        return perimeter;
     }
 };
