@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-30 21:19:20
- * @LastEditTime: 2021-06-01 22:26:21
+ * @LastEditTime: 2021-06-02 22:18:57
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\广度优先搜索.cpp
@@ -553,5 +553,197 @@ public:
             }
         }
         return perimeter;
+    }
+};
+
+/* 529题扫雷游戏 */
+/* 广度优先搜索 */
+/* 注意重复入队问题，可以考虑哈希表，但是效果不明显 */
+/* 不对，哈希表还是会重复 */
+/* 原因是在出队时，需要删除哈希表中元素 */
+/* 从而，之后仍然可以重复入队 */
+/* 可以直接改变原数组中元素为一特定元素 */
+/* 从而标记为以访问 */
+class Solution {
+public:
+    int dx[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    int dy[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    vector<vector<char>> updateBoard(vector<vector<char>>& board,
+                                     vector<int>& click) {
+        if (board.empty() || click.empty()) {
+            return board;
+        }
+        int r = click[0], c = click[1];
+        if (board[r][c] == 'M') {
+            board[r][c] = 'X';
+            return board;
+        }
+        queue<pair<int, int>> que;
+        que.push(make_pair(r, c));
+        while (!que.empty()) {
+            auto it = que.front();
+            que.pop();
+            int count = 0;
+            for (int i = 0; i < 8; i++) {
+                int row = it.first + dx[i], col = it.second + dy[i];
+                if (row < 0 || row >= board.size() || col < 0 ||
+                    col >= board[0].size()) {
+                    continue;
+                }
+                if (board[row][col] == 'M') {
+                    count++;
+                }
+            }
+            board[it.first][it.second] = count ? '0' + count : 'B';
+            if (!count) {
+                for (int i = 0; i < 8; i++) {
+                    int row = it.first + dx[i], col = it.second + dy[i];
+                    if (row < 0 || row >= board.size() || col < 0 ||
+                        col >= board[0].size()) {
+                        continue;
+                    }
+                    if (board[row][col] == 'E') {
+                        board[row][col] = 'e';
+                        que.push(make_pair(row, col));
+                    }
+                }
+            }
+        }
+        return board;
+    }
+};
+/* 深度优先搜索 */
+/* 由于深度优先搜索，递归之后就会改变元素 */
+/* 为数字或者'B'，可以看出已经访问过 */
+/* 故不需要设置visited数组 */
+class Solution {
+public:
+    int dx[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+    int dy[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+    void dfs(vector<vector<char>>& board, int r, int c) {
+        if (r < 0 || r >= board.size() || c < 0 || c >= board[0].size()) {
+            return;
+        }
+        int count = 0;
+        for (int i = 0; i < 8; i++) {
+            int row = r + dx[i], col = c + dy[i];
+            if (row < 0 || row >= board.size() || col < 0 ||
+                col >= board[0].size()) {
+                continue;
+            }
+            if (board[row][col] == 'M') {
+                count++;
+            }
+        }
+        board[r][c] = count ? '0' + count : 'B';
+        if (!count) {
+            for (int i = 0; i < 8; i++) {
+                int row = r + dx[i], col = c + dy[i];
+                if (row < 0 || row >= board.size() || col < 0 ||
+                    col >= board[0].size()) {
+                    continue;
+                }
+                if (board[row][col] == 'E') {
+                    dfs(board, row, col);
+                }
+            }
+        }
+    }
+    vector<vector<char>> updateBoard(vector<vector<char>>& board,
+                                     vector<int>& click) {
+        if (board.empty() || click.empty()) {
+            return board;
+        }
+        int r = click[0], c = click[1];
+        if (board[r][c] == 'M') {
+            board[r][c] = 'X';
+            return board;
+        }
+        dfs(board, r, c);
+        return board;
+    }
+};
+
+/* 542题01矩阵 */
+/* 广度优先搜索 */
+/* 注意开始是将0元素入队 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+        if (mat.empty()) {
+            return mat;
+        }
+        int n = mat.size(), m = mat[0].size();
+        vector<vector<int>> visited(n, vector<int>(m, 0));
+        vector<vector<int>> dist(n, vector<int>(m, 0));
+        queue<pair<int, int>> que;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (mat[i][j] == 0) {
+                    que.push({i, j});
+                    visited[i][j] = 1;
+                }
+            }
+        }
+        while (!que.empty()) {
+            auto it = que.front();
+            que.pop();
+            for (int i = 0; i < 4; i++) {
+                int row = it.first + dx[i], col = it.second + dy[i];
+                if (row < 0 || row >= n || col < 0 || col >= m) {
+                    continue;
+                }
+                if (!visited[row][col]) {
+                    que.push({row, col});
+                    visited[row][col] = 1;
+                    dist[row][col] = dist[it.first][it.second] + 1;
+                }
+            }
+        }
+        return dist;
+    }
+};
+/* 对上面程序优化，不使用visited数组 */
+/* 通过dist和mat数组来判断已经访问过 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    vector<vector<int>> updateMatrix(vector<vector<int>>& mat) {
+        if (mat.empty()) {
+            return mat;
+        }
+        int n = mat.size(), m = mat[0].size();
+        vector<vector<int>> dist(n, vector<int>(m, 0));
+        queue<pair<int, int>> que;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (mat[i][j] == 0) {
+                    que.push({i, j});
+                }
+            }
+        }
+        int count = 0;
+        while (!que.empty()) {
+            count++;
+            int num = que.size();
+            while (num--) {
+                auto it = que.front();
+                que.pop();
+                for (int i = 0; i < 4; i++) {
+                    int row = it.first + dx[i], col = it.second + dy[i];
+                    if (row < 0 || row >= n || col < 0 || col >= m) {
+                        continue;
+                    }
+                    if (!dist[row][col] && mat[row][col]) {
+                        que.push({row, col});
+                        dist[row][col] = count;
+                    }
+                }
+            }
+        }
+        return dist;
     }
 };
