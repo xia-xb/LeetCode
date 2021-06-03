@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-30 21:19:20
- * @LastEditTime: 2021-06-02 22:18:57
+ * @LastEditTime: 2021-06-03 22:39:48
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\广度优先搜索.cpp
@@ -745,5 +745,128 @@ public:
             }
         }
         return dist;
+    }
+};
+
+/* 695题岛屿的最大面积 */
+/* 广度优先搜索 */
+/* 注意重复入队问题 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int n = grid.size(), m = grid[0].size();
+        int maxArea = 0;
+        vector<vector<int>> visited(n, vector<int>(m, 0));
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] && !visited[i][j]) {
+                    int area = 0;
+                    queue<pair<int, int>> que;
+                    que.push({i, j});
+                    while (!que.empty()) {
+                        auto it = que.front();
+                        que.pop();
+                        area++;
+                        visited[it.first][it.second] = 1;
+                        for (int k = 0; k < 4; k++) {
+                            int row = it.first + dx[k], col = it.second + dy[k];
+                            if (row < 0 || row >= n || col < 0 || col >= m) {
+                                continue;
+                            }
+                            if (grid[row][col] && !visited[row][col]) {
+                                que.push({row, col});
+                                visited[row][col] = 1;
+                            }
+                        }
+                    }
+                    maxArea = max(maxArea, area);
+                }
+            }
+        }
+        return maxArea;
+    }
+};
+/* 优化上面代码 */
+/* 通过直接改变原数组中元素，指示已经访问过 */
+/* 省去开辟visited数组 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int n = grid.size(), m = grid[0].size();
+        int maxArea = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    int area = 0;
+                    queue<pair<int, int>> que;
+                    que.push({i, j});
+                    grid[i][j] = 2;
+                    while (!que.empty()) {
+                        auto it = que.front();
+                        que.pop();
+                        area++;
+                        for (int k = 0; k < 4; k++) {
+                            int row = it.first + dx[k], col = it.second + dy[k];
+                            if (row < 0 || row >= n || col < 0 || col >= m) {
+                                continue;
+                            }
+                            if (grid[row][col] == 1) {
+                                que.push({row, col});
+                                grid[row][col] = 2;
+                            }
+                        }
+                    }
+                    maxArea = max(maxArea, area);
+                }
+            }
+        }
+        return maxArea;
+    }
+};
+/* 深度优先搜索 */
+class Solution {
+public:
+    int dx[4] = {-1, 1, 0, 0};
+    int dy[4] = {0, 0, -1, 1};
+    int dfs(vector<vector<int>>& grid, int r, int c) {
+        if (r < 0 || r >= grid.size() || c < 0 || c >= grid[0].size()) {
+            return 0;
+        }
+        if (!grid[r][c]) {
+            return 0;
+        } else {
+            grid[r][c] = 0;
+        }
+        int area = 0;
+        for (int i = 0; i < 4; i++) {
+            int row = r + dx[i], col = c + dy[i];
+            area += dfs(grid, row, col);
+        }
+        return area + 1;
+    }
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        if (grid.empty()) {
+            return 0;
+        }
+        int n = grid.size(), m = grid[0].size();
+        int maxArea = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 1) {
+                    maxArea = max(maxArea, dfs(grid, i, j));
+                }
+            }
+        }
+        return maxArea;
     }
 };
