@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-15 20:43:59
- * @LastEditTime: 2021-06-15 22:57:32
+ * @LastEditTime: 2021-06-16 21:51:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/二分查找与旋转数组.cpp
@@ -80,5 +80,74 @@ public:
             }
         }
         return -1;
+    }
+};
+
+
+/* 81题搜索旋转排序数组II */
+/* 二分查找 */
+/* 思路与33题类似 */
+/* 主要问题是由于存在重复值，需要仔细考虑每种情况 */
+class Solution {
+public:
+    bool search(vector<int>& nums, int target) {
+        int left=0,right=nums.size()-1;
+        while(left<=right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]==target){
+                return true;
+            }else if(nums[mid]<nums[right]){
+                if(target>nums[mid] && target<=nums[right]){
+                    left=mid+1;
+                }else{
+                    right=mid-1;
+                }
+            }else if(nums[mid]==nums[right]){
+                if(target>=nums[left] && target<nums[mid]){
+                    right=mid-1;
+                }else{
+                    right--;
+                }
+            }else{
+                if(target>=nums[left] && target<nums[mid]){
+                    right=mid-1;
+                }else{
+                    left=mid+1;
+                }
+            }
+        }
+        return false;
+    }
+};
+/* 另一种思考方式 */
+/* 主要原因是重复元素的存在使得中间元素与左右元素相等时 */
+/* 难以判断判断连续序列，该情况特殊对待left++,right--即可 */
+/* 其他情况相同 */
+class Solution {
+public:
+    bool search(vector<int>& nums, int target) {
+        int left=0,right=nums.size()-1;
+        while(left<=right){
+            int mid=left+(right-left)/2;
+            if(nums[mid]==target){
+                return true;
+            }else if(nums[mid]==nums[right] && nums[mid]==nums[left]){
+                left++;
+                right--;
+            }else if(nums[mid]<=nums[right]){
+                if(target>nums[mid] && target<=nums[right]){
+                    left=mid+1;
+                }else{
+                    right=mid-1;
+                }
+            }else{
+                if(target>=nums[left] && target<nums[mid]){
+                    right=mid-1;
+                }else{
+                    left=mid+1;
+                }
+            }
+        }
+        return false;
     }
 };
