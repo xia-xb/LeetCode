@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-17 23:42:56
- * @LastEditTime: 2021-06-22 22:46:58
+ * @LastEditTime: 2021-06-24 22:56:12
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\头尾指针.cpp
@@ -224,6 +224,172 @@ public:
                     second++;
                 } else {
                     third--;
+                }
+            }
+        }
+        return res;
+    }
+};
+/* 代码优化 */
+class Solution {
+public:
+    int dis(int sum, int target) { return abs(sum - target); }
+    int threeSumClosest(vector<int>& nums, int target) {
+        int res = 0;
+        if (nums.size() <= 3) {
+            for (int it : nums) {
+                res += it;
+            }
+            return res;
+        }
+        res = nums[0] + nums[1] + nums[2];
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        for (int first = 0; first < n; first++) {
+            if (first > 0 && nums[first] == nums[first - 1]) {
+                continue;
+            }
+            int second = first + 1, third = n - 1;
+            while (second < third) {
+                if (second > first + 1 && nums[second] == nums[second - 1]) {
+                    second++;
+                    continue;
+                }
+                if (third < n - 1 && nums[third] == nums[third + 1]) {
+                    third--;
+                    continue;
+                }
+                int sum = nums[first] + nums[second] + nums[third];
+                if (dis(sum, target) < dis(res, target)) {
+                    res = sum;
+                }
+                if (sum == target) {
+                    return target;
+                } else if (sum < target) {
+                    second++;
+                } else {
+                    third--;
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 18题四数之和 */
+/* 和三数之和类似 */
+/* 多一层循环 */
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        if (nums.size() < 4) {
+            return {};
+        }
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        vector<vector<int>> res;
+        for (int first = 0; first < n - 3; first++) {
+            if (first > 0 && nums[first] == nums[first - 1]) {
+                continue;
+            }
+            for (int second = first + 1; second < n - 2; second++) {
+                if (second > first + 1 && nums[second] == nums[second - 1]) {
+                    continue;
+                }
+                int newTarget = target - nums[first] - nums[second];
+                int third = second + 1, fourth = n - 1;
+                while (third < fourth) {
+                    int sum = nums[third] + nums[fourth];
+                    if (sum == newTarget) {
+                        res.push_back({nums[first], nums[second], nums[third],
+                                       nums[fourth]});
+                        third++;
+                        while (third < fourth && third > second + 1 &&
+                               nums[third] == nums[third - 1]) {
+                            third++;
+                        }
+                    } else if (sum < newTarget) {
+                        third++;
+                        while (third < fourth && third > second + 1 &&
+                               nums[third] == nums[third - 1]) {
+                            third++;
+                        }
+                    } else {
+                        fourth--;
+                        while (third < fourth && fourth < n - 1 &&
+                               nums[fourth] == nums[fourth + 1]) {
+                            fourth--;
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+/* 剪枝 */
+/* 注意大于和小于时剪枝是不一样的 */
+/* 一个是break,一个是continue */
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        if (nums.size() < 4) {
+            return {};
+        }
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        vector<vector<int>> res;
+        for (int first = 0; first < n - 3; first++) {
+            if (first > 0 && nums[first] == nums[first - 1]) {
+                continue;
+            }
+            if (nums[first] + nums[first + 1] + nums[first + 2] +
+                    nums[first + 3] >
+                target) {
+                break;
+            }
+            if (nums[first] + nums[n - 3] + nums[n - 2] + nums[n - 1] <
+                target) {
+                continue;
+            }
+            for (int second = first + 1; second < n - 2; second++) {
+                if (second > first + 1 && nums[second] == nums[second - 1]) {
+                    continue;
+                }
+                if (nums[first] + nums[second] + nums[second + 1] +
+                        nums[second + 2] >
+                    target) {
+                    break;
+                }
+                if (nums[first] + nums[second] + nums[n - 2] + nums[n - 1] <
+                    target) {
+                    continue;
+                }
+                int newTarget = target - nums[first] - nums[second];
+                int third = second + 1, fourth = n - 1;
+                while (third < fourth) {
+                    int sum = nums[third] + nums[fourth];
+                    if (sum == newTarget) {
+                        res.push_back({nums[first], nums[second], nums[third],
+                                       nums[fourth]});
+                        third++;
+                        while (third < fourth && third > second + 1 &&
+                               nums[third] == nums[third - 1]) {
+                            third++;
+                        }
+                    } else if (sum < newTarget) {
+                        third++;
+                        while (third < fourth && third > second + 1 &&
+                               nums[third] == nums[third - 1]) {
+                            third++;
+                        }
+                    } else {
+                        fourth--;
+                        while (third < fourth && fourth < n - 1 &&
+                               nums[fourth] == nums[fourth + 1]) {
+                            fourth--;
+                        }
+                    }
                 }
             }
         }
