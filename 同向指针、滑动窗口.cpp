@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-25 21:31:42
- * @LastEditTime: 2021-06-26 00:07:12
+ * @LastEditTime: 2021-06-26 14:31:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/同向指针、滑动窗口.cpp
@@ -186,5 +186,71 @@ public:
         }
         tail->next = nullptr;
         return newhead->next;
+    }
+};
+
+/* 611题有效的三角形的个数 */
+/* 二分查找 */
+class Solution {
+public:
+    int triangleNumber(vector<int>& nums) {
+        if (nums.size() < 3) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int count = 0, n = nums.size();
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                int sum = nums[i] + nums[j];
+                if (nums[j + 1] > sum) {
+                    continue;
+                }
+                if (nums[n - 1] < sum) {
+                    count += n - j - 1;
+                    continue;
+                }
+                int left = j + 1, right = n - 1;
+                while (left <= right) {
+                    int mid = left + (right - left) / 2;
+                    int midValue = nums[mid];
+                    if (midValue == sum) {
+                        right = mid - 1;
+                    } else if (midValue < sum) {
+                        left = mid + 1;
+                    } else {
+                        right = mid - 1;
+                    }
+                }
+                count += left - j - 1;
+            }
+        }
+        return count;
+    }
+};
+/* 双指针 */
+/* 注意对于每个left,下一个left的right可以直接开始 */
+/* 不用从left+1便利 */
+class Solution {
+public:
+    int triangleNumber(vector<int>& nums) {
+        if (nums.size() < 3) {
+            return 0;
+        }
+        sort(nums.begin(), nums.end());
+        int count = 0, n = nums.size();
+        for (int i = 0; i < n - 2; i++) {
+            if (nums[i] == 0) {
+                continue;
+            }
+            int left = i + 1, right = left + 1;
+            for (; left < n - 1; left++) {
+                int sum = nums[i] + nums[left];
+                while (right < n && sum > nums[right]) {
+                    right++;
+                }
+                count += right - left - 1;
+            }
+        }
+        return count;
     }
 };
