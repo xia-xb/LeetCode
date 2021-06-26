@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-25 21:31:42
- * @LastEditTime: 2021-06-26 14:31:05
+ * @LastEditTime: 2021-06-26 23:51:09
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/同向指针、滑动窗口.cpp
@@ -252,5 +252,118 @@ public:
             }
         }
         return count;
+    }
+};
+
+/* 3题无重复字符的最长字串 */
+/* 滑动窗口 */
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        int res = 0;
+        int left = 0, right = 0;
+        unordered_map<char, int> window;
+        while (right < s.size()) {
+            char c1 = s[right];
+            window[c1]++;
+            right++;
+
+            while (window[c1] > 1) {
+                window[s[left]]--;
+                left++;
+            }
+            res = max(res, right - left);
+        }
+        return res;
+    }
+};
+
+/* 30题串联所有单词的子串 */
+/* 滑动窗口 */
+/* 注意保证每个单词的个数刚好等于所要求个数 */
+/* 并且以此为条件移动窗口左侧 */
+/* 之后只需判断总的单词个数相等即可 */
+/* 此外当出现单词不匹配时 */
+/* 则重新开始，且直接从右侧开始即可 */
+/* 因为左侧一定不会满足条件 */
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+        vector<int> res;
+        int wordNum = words.size(), wordsLength = words[0].size();
+        unordered_map<string, int> needs;
+        for (int i = 0; i < words.size(); i++) {
+            needs[words[i]]++;
+        }
+        for (int start = 0; start < wordsLength; start++) {
+            int left = start, right = start, count = 0;
+            unordered_map<string, int> window;
+            while (right + wordsLength <= s.size()) {
+                string s1 = s.substr(right, wordsLength);
+                right += wordsLength;
+                if (!needs.count(s1)) {
+                    left = right;
+                    count = 0;
+                    window.clear();
+                } else {
+                    window[s1]++;
+                    count++;
+                    while (window[s1] > needs[s1]) {
+                        string s2 = s.substr(left, wordsLength);
+                        if (needs.count(s2)) {
+                            window[s2]--;
+                            count--;
+                        }
+                        left += wordsLength;
+                    }
+                    if (count == words.size()) {
+                        res.push_back(left);
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 76题最小覆盖子串 */
+/* 滑动窗口 */
+/* 注意后面比较子串长度时 */
+/* 窗口的right在前面加1了，需要去除 */
+class Solution {
+public:
+    string minWindow(string s, string t) {
+        string res;
+        unordered_map<char, int> needs;
+        for (int i = 0; i < t.size(); i++) {
+            needs[t[i]]++;
+        }
+        int left = 0, right = 0;
+        unordered_map<char, int> window;
+        int match = 0;
+        while (right < s.size()) {
+            char c1 = s[right];
+            if (needs.count(c1)) {
+                window[c1]++;
+                if (window[c1] == needs[c1]) {
+                    match++;
+                }
+            }
+            right++;
+            while (match == needs.size()) {
+                if (res.empty() || right - left < res.size()) {
+                    res = s.substr(left, right - left);
+                }
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    window[c2]--;
+                    if (window[c2] < needs[c2]) {
+                        match--;
+                    }
+                }
+                left++;
+            }
+        }
+        return res;
     }
 };
