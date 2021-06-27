@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-25 21:31:42
- * @LastEditTime: 2021-06-26 23:51:09
+ * @LastEditTime: 2021-06-27 23:58:01
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/同向指针、滑动窗口.cpp
@@ -363,6 +363,210 @@ public:
                 }
                 left++;
             }
+        }
+        return res;
+    }
+};
+
+/* 187题重复的DNA序列 */
+/* 哈希表 */
+class Solution {
+public:
+    vector<string> findRepeatedDnaSequences(string s) {
+        vector<string> res;
+        if (s.size() < 10) {
+            return res;
+        }
+        set<string> st;
+        set<string> ans;
+        for (int i = 0; i + 10 <= s.size(); i++) {
+            string s1 = s.substr(i, 10);
+            if (st.count(s1)) {
+                if (!ans.count(s1)) {
+                    res.push_back(s1);
+                    ans.insert(s1);
+                }
+            } else {
+                st.insert(s1);
+            }
+        }
+        return res;
+    }
+};
+
+/* 209题长度最小的子数组 */
+/* 滑动窗口 */
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int length = 0;
+        int left = 0, right = 0, sum = 0;
+        while (right < nums.size()) {
+            sum += nums[right++];
+            while (sum >= target) {
+                if (length == 0 || right - left < length) {
+                    length = right - left;
+                }
+                sum -= nums[left++];
+            }
+        }
+        return length;
+    }
+};
+/* 前缀和+二分查找 */
+class Solution {
+public:
+    int minSubArrayLen(int target, vector<int>& nums) {
+        int length = 0;
+        vector<int> sums(nums.size() + 1, 0);
+        for (int i = 0; i < nums.size(); i++) {
+            sums[i + 1] = sums[i] + nums[i];
+        }
+        for (int i = 1; i < sums.size(); i++) {
+            int newTarget = sums[i] - target;
+            int left = 1, right = i - 1;
+            int position = -1;
+            while (left <= right) {
+                int mid = left + (right - left) / 2;
+                if (sums[mid] == newTarget) {
+                    position = mid;
+                    break;
+                } else if (sums[mid] < newTarget) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            position = position == -1 ? right : position;
+            if (sums[position] <= newTarget) {
+                if (length == 0 || i - position < length) {
+                    length = i - position;
+                }
+            }
+        }
+        return length;
+    }
+};
+
+/* 438题找到字符串中所有字母异位词 */
+/* 滑动窗口 */
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> res;
+        int strLength = p.size();
+        unordered_map<char, int> needs;
+        for (char it : p) {
+            needs[it]++;
+        }
+        int left = 0, right = 0;
+        unordered_map<char, int> window;
+        int match = 0;
+        while (right < s.size()) {
+            char c1 = s[right++];
+            if (needs.count(c1)) {
+                window[c1]++;
+                if (window[c1] == needs[c1]) {
+                    match++;
+                }
+            } else {
+                left = right;
+                window.clear();
+                match = 0;
+                continue;
+            }
+            while (window[c1] > needs[c1]) {
+                char c2 = s[left];
+                if (needs.count(c2)) {
+                    if (window[c2] == needs[c2]) {
+                        match--;
+                    }
+                    window[c2]--;
+                }
+                left++;
+            }
+            if (match == needs.size()) {
+                res.push_back(left);
+                match--;
+                window[s[left]]--;
+                left++;
+            }
+        }
+        return res;
+    }
+};
+/* 整理上面代码 */
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> res;
+        int strLength = p.size();
+        unordered_map<char, int> needs;
+        for (char it : p) {
+            needs[it]++;
+        }
+        int left = 0, right = 0;
+        unordered_map<char, int> window;
+        int match = 0;
+        while (right < s.size()) {
+            char c1 = s[right++];
+            if (!needs.count(c1)) {
+                left = right;
+                window.clear();
+                match = 0;
+            } else {
+                window[c1]++;
+                if (window[c1] == needs[c1]) {
+                    match++;
+                }
+                while (window[c1] > needs[c1]) {
+                    char c2 = s[left++];
+                    if (needs.count(c2)) {
+                        if (window[c2] == needs[c2]) {
+                            match--;
+                        }
+                        window[c2]--;
+                    }
+                }
+                if (match == needs.size()) {
+                    res.push_back(left);
+                    match--;
+                    window[s[left++]]--;
+                }
+            }
+        }
+        return res;
+    }
+};
+/* 滑动窗口另一种思路 */
+/* 直接固定窗口大小 */
+/* 然后判断是否符合要求 */
+/* 而不是改变窗口，寻找符合要求子串 */
+/* 此外可以借鉴的是 */
+/* 字符串只包含小写英文字母，类别有限 */
+/* 可以使用数组代替哈希表，从而减少内存 */
+class Solution {
+public:
+    vector<int> findAnagrams(string s, string p) {
+        vector<int> res;
+        if (p.size() > s.size() || s.empty()) {
+            return res;
+        }
+        vector<int> needs(26);
+        for (char it : p) {
+            needs[it - 'a']++;
+        }
+        vector<int> window(26);
+        for (int i = 0; i < p.size() - 1; i++) {
+            window[s[i] - 'a']++;
+        }
+        int left = 0, right = p.size() - 1;
+        while (right < s.size()) {
+            window[s[right++] - 'a']++;
+            if (window == needs) {
+                res.push_back(left);
+            }
+            window[s[left++] - 'a']--;
         }
         return res;
     }
