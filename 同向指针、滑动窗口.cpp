@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-06-25 21:31:42
- * @LastEditTime: 2021-06-27 23:58:01
+ * @LastEditTime: 2021-06-28 22:40:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/同向指针、滑动窗口.cpp
@@ -569,5 +569,142 @@ public:
             window[s[left++] - 'a']--;
         }
         return res;
+    }
+};
+
+/* 567题字符串的排列 */
+/* 固定长度的滑动窗口 */
+/* 思路同438题第2种思路 */
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int strLength = s1.size();
+        if (s2.size() < strLength) {
+            return false;
+        }
+        vector<int> needs(26, 0), window(26, 0);
+        for (char it : s1) {
+            needs[it - 'a']++;
+        }
+        for (int i = 0; i < strLength - 1; i++) {
+            window[s2[i] - 'a']++;
+        }
+        int left = 0, right = strLength - 1;
+        while (right < s2.size()) {
+            window[s2[right++] - 'a']++;
+            if (window == needs) {
+                return true;
+            }
+            window[s2[left++] - 'a']--;
+        }
+        return false;
+    }
+};
+/* 一般的滑动窗口思想 */
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        unordered_map<char, int> needs;
+        for (char it : s1) {
+            needs[it]++;
+        }
+        unordered_map<char, int> window;
+        int left = 0, right = 0, match = 0;
+        while (right < s2.size()) {
+            char c1 = s2[right++];
+            if (!needs.count(c1)) {
+                left = right;
+                window.clear();
+                match = 0;
+                continue;
+            } else {
+                window[c1]++;
+                if (window[c1] == needs[c1]) {
+                    match++;
+                }
+            }
+            while (window[c1] > needs[c1]) {
+                char c2 = s2[left++];
+                if (needs.count(c2)) {
+                    if (window[c2] == needs[c2]) {
+                        match--;
+                    }
+                    window[c2]--;
+                }
+            }
+            if (match == needs.size()) {
+                return true;
+            }
+        }
+        return false;
+    }
+};
+
+/* 643题子数组最大平均数I */
+/* 固定长度滑动窗口 */
+class Solution {
+public:
+    double findMaxAverage(vector<int>& nums, int k) {
+        if (nums.size() < k) {
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < k - 1; i++) {
+            sum += nums[i];
+        }
+        int left = 0, right = k - 1;
+        double average = -10000;
+        while (right < nums.size()) {
+            sum += nums[right++];
+            average = max(average, sum / (k + 0.0));
+            sum -= nums[left++];
+        }
+        return average;
+    }
+};
+/* 直接寻找最大和 */
+/* 之后再返回平均数即可 */
+class Solution {
+public:
+    double findMaxAverage(vector<int>& nums, int k) {
+        if (nums.size() < k) {
+            return 0;
+        }
+        int sum = 0;
+        for (int i = 0; i < k - 1; i++) {
+            sum += nums[i];
+        }
+        int left = 0, right = k - 1;
+        int maxsum = -10000 * k;
+        while (right < nums.size()) {
+            sum += nums[right++];
+            maxsum = max(maxsum, sum);
+            sum -= nums[left++];
+        }
+        return maxsum / (k + 0.0);
+    }
+};
+
+/* 674题最长连续递增序列 */
+/* 双指针 */
+/* 滑动窗口 */
+/* 注意末尾元素 */
+class Solution {
+public:
+    int findLengthOfLCIS(vector<int>& nums) {
+        int length = 1;
+        int left = 0, right = 0;
+        while (right < nums.size() - 1) {
+            if (nums[right] >= nums[right + 1]) {
+                length = max(length, right - left + 1);
+                left = ++right;
+                continue;
+            }
+            if (right == nums.size() - 2) {
+                length = max(length, right - left + 2);
+            }
+            right++;
+        }
+        return length;
     }
 };
