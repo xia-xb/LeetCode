@@ -1,11 +1,12 @@
 /*
- * @Author: your name
+ * @Author: 夏玄兵
  * @Date: 2021-06-30 23:19:17
- * @LastEditTime: 2021-07-01 23:32:14
- * @LastEditors: Please set LastEditors
- * @Description: In User Settings Edit
+ * @LastEditors: 夏玄兵
+ * @LastEditTime: 2021-07-02 16:37:19
+ * @Description: file content
  * @FilePath: \LeetCode\快慢指针.cpp
  */
+
 
 /* 环形链表 */
 /* 快慢指针 */

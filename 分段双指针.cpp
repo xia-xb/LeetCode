@@ -1,11 +1,12 @@
 /*
  * @Author: your name
  * @Date: 2021-06-28 22:40:23
- * @LastEditTime: 2021-06-30 23:16:56
- * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-07-02 16:38:20
+ * @LastEditors: 夏玄兵
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\分段双指针.cpp
  */
+
 
 /* 86题分隔链表 */
 /* 双指针，分别对应较小，较大元素 */
