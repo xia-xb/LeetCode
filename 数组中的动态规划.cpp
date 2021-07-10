@@ -1,8 +1,8 @@
 /*
  * @Author: 夏玄兵
  * @Date: 2021-07-07 22:17:09
- * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-09 23:44:27
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-07-10 22:38:39
  * @Description: file content
  * @FilePath: \LeetCode\数组中的动态规划.cpp
  */
@@ -303,5 +303,75 @@ public:
             return max(nums[0], nums[1]);
         }
         return max(maxAmount(nums, nums[0]), maxAmount(nums, -1));
+    }
+};
+
+
+/* 650题只有两个健的键盘 */
+/* 素数分解 */
+class Solution {
+public:
+    int minSteps(int n) {
+        int res=0,d=2;
+        while(n>1){
+            while(n%d==0){
+                res+=d;
+                n/=d;
+            }
+            d++;
+        }       
+        return res; 
+    }
+};
+
+
+/* 91题解码方法 */
+/* 动态规划 */
+/* dp[i]表示解码0～i的方法总数 */
+/* 两种方式，单独s[i]，以及s[i-1],s[i]一起解码 */
+/* 同时设置判断是都合法函数 */
+class Solution {
+public:
+    bool isVaild(int first,int second){
+        if(first==0){return false;}
+        int sum=first*10+second;
+        return sum>=1 && sum<=26;
+    }
+    int numDecodings(string s) {
+        if(s.empty() || s[0]=='0'){return 0;}
+        if(s.size()==1){return 1;}
+        vector<int>dp(s.size(),0);
+        dp[0]=1;
+        if(s[1]!='0'){dp[1]++;}
+        if(isVaild(s[0]-'0',s[1]-'0')){dp[1]++;}
+        for(int i=2;i<dp.size();i++){
+            if(s[i]!='0'){dp[i]+=dp[i-1];}
+            dp[i]+=isVaild(s[i-1]-'0',s[i]-'0') ? dp[i-2]:0;
+        }
+        return dp.back();
+    }
+};
+/* 内存优化 */
+class Solution {
+public:
+    bool isVaild(int first,int second){
+        if(first==0){return false;}
+        int sum=first*10+second;
+        return sum>=1 && sum<=26;
+    }
+    int numDecodings(string s) {
+        if(s.empty() || s[0]=='0'){return 0;}
+        if(s.size()==1){return 1;}
+        int pre=1,cur=0;
+        if(s[1]!='0'){cur++;}
+        if(isVaild(s[0]-'0',s[1]-'0')){cur++;}
+        for(int i=2;i<s.size();i++){
+            int tmp=0;
+            if(s[i]!='0'){tmp+=cur;}
+            tmp+=isVaild(s[i-1]-'0',s[i]-'0') ? pre:0;
+            pre=cur;
+            cur=tmp;
+        }
+        return cur;
     }
 };
