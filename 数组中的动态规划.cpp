@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-07 22:17:09
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-07-11 12:33:28
+ * @LastEditTime: 2021-07-12 21:21:00
  * @Description: file content
  * @FilePath: \LeetCode\数组中的动态规划.cpp
  */
@@ -376,6 +376,42 @@ public:
             return 0;
         }
         if (s.size() == 1) {
+            return 1;
+        }
+        int pre = 1, cur = 0;
+        if (s[1] != '0') {
+            cur++;
+        }
+        if (isVaild(s[0] - '0', s[1] - '0')) {
+            cur++;
+        }
+        for (int i = 2; i < s.size(); i++) {
+            int tmp = 0;
+            if (s[i] != '0') {
+                tmp += cur;
+            }
+            tmp += isVaild(s[i - 1] - '0', s[i] - '0') ? pre : 0;
+            pre = cur;
+            cur = tmp;
+        }
+        return cur;
+    }
+};
+/* 修改，空字符串可以解码，解码为一个空字符串 */
+class Solution {
+public:
+    bool isVaild(int first, int second) {
+        if (first == 0) {
+            return false;
+        }
+        int sum = first * 10 + second;
+        return sum >= 1 && sum <= 26;
+    }
+    int numDecodings(string s) {
+        if (s[0] == '0') {
+            return 0;
+        }
+        if (s.empty() || s.size() == 1) {
             return 1;
         }
         int pre = 1, cur = 0;
