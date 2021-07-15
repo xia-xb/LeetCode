@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-07 22:17:09
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-07-12 21:21:00
+ * @LastEditTime: 2021-07-15 22:04:27
  * @Description: file content
  * @FilePath: \LeetCode\数组中的动态规划.cpp
  */
@@ -431,5 +431,119 @@ public:
             cur = tmp;
         }
         return cur;
+    }
+};
+
+/* 32题最长有效括号 */
+/* 栈 */
+/* 主要问题是如何判断连续 */
+class Solution {
+public:
+    int longestValidParentheses(string s) {
+        if (s.size() < 2) {
+            return 0;
+        }
+        int res = 0;
+        stack<int> stk;
+        stk.push(-1);
+        for (int i = 0; i < s.size(); i++) {
+            char c = s[i];
+            if (c == '(') {
+                stk.push(i);
+            } else {
+                stk.pop();
+                if (stk.empty()) {
+                    stk.push(i);
+                } else {
+                    res = max(i - stk.top(), res);
+                }
+            }
+        }
+        return res;
+    }
+};
+/* 动态规划 */
+/* dp[i]字符s[i]结尾的最长有效长度 */
+/* j=i-1-dp[i-1] */
+/* j>=0 && s[j]='(' */
+/* j==0  dp[i]=i-j+1 */
+/* dp[i]=dp[j-1]+i-j=1 */
+class Solution {
+public:
+    int longestValidParentheses(string s) {
+        if (s.size() < 2) {
+            return 0;
+        }
+        int res = 0;
+        vector<int> dp(s.size(), 0);
+        for (int i = 0; i < s.size(); i++) {
+            char c = s[i];
+            if (c == '(' || i == 0) {
+                continue;
+            }
+            int j = i - 1 - dp[i - 1];
+            if (j >= 0 && s[j] == '(') {
+                if (j == 0) {
+                    dp[i] = i - j + 1;
+                } else {
+                    dp[i] = dp[j - 1] + i - j + 1;
+                }
+            }
+            res = max(res, dp[i]);
+        }
+        return res;
+    }
+};
+
+/* 121题买卖股票的最佳时机 */
+/* 记录前0~i-1天的最低价格 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        int res = 0;
+        int minPrice = prices[0];
+        for (int i = 1; i < prices.size(); i++) {
+            res = max(res, prices[i] - minPrice);
+            minPrice = min(minPrice, prices[i]);
+        }
+        return res;
+    }
+};
+
+/* 122题买卖股票的最佳时机II */
+/* dp[i]前i天的最大利润 */
+/* dp[i]=dp[i-1] price[i]=price[i-1] */
+/* dp[i]=dp[i-1]+price[i]-price[i-1] */
+/* price[i]>price[i-1] */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        vector<int> dp(prices.size(), 0);
+        for (int i = 1; i < dp.size(); i++) {
+            dp[i] = dp[i - 1] +
+                    (prices[i] > prices[i - 1] ? prices[i] - prices[i - 1] : 0);
+        }
+        return dp.back();
+    }
+};
+/* 内存优化 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        int res = 0;
+        for (int i = 1; i < prices.size(); i++) {
+            res = res +
+                  (prices[i] > prices[i - 1] ? prices[i] - prices[i - 1] : 0);
+        }
+        return res;
     }
 };
