@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-07 22:17:09
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-07-15 22:04:27
+ * @LastEditTime: 2021-07-16 23:22:39
  * @Description: file content
  * @FilePath: \LeetCode\数组中的动态规划.cpp
  */
@@ -545,5 +545,65 @@ public:
                   (prices[i] > prices[i - 1] ? prices[i] - prices[i - 1] : 0);
         }
         return res;
+    }
+};
+
+/* 123题买卖股票的最佳时机III */
+/* 动态规划，主要是设置状态 */
+/* 每一天有5种状态 */
+/* 什么也没干，买过1次股票 */
+/* 卖过1次股票，卖过1次股票且买过2次股票 */
+/* 卖过2次股票 */
+/* 对于什么也没干其状态为0，不用设 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        vector<vector<int>> dp(4, vector<int>(prices.size(), 0));
+        dp[0][0] = -prices[0];
+        dp[2][0] = -prices[0];
+        for (int i = 1; i < prices.size(); i++) {
+            dp[0][i] = max(dp[0][i - 1], -prices[i]);
+            dp[1][i] = max(dp[1][i - 1], prices[i] + dp[0][i - 1]);
+            dp[2][i] = max(dp[2][i - 1], dp[1][i - 1] - prices[i]);
+            dp[3][i] = max(dp[3][i - 1], prices[i] + dp[2][i - 1]);
+        }
+        return dp[3].back();
+    }
+};
+/* 内存优化 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        int buy1 = -prices[0], sell1 = 0, buy2 = -prices[0], sell2 = 0;
+        for (int i = 1; i < prices.size(); i++) {
+            buy1 = max(buy1, -prices[i]);
+            sell1 = max(sell1, prices[i] + buy1);
+            buy2 = max(buy2, sell1 - prices[i]);
+            sell2 = max(sell2, prices[i] + buy2);
+        }
+        return sell2;
+    }
+};
+
+/* 309题最佳买卖股票时机含冷冻期 */
+/* 动态规划 */
+/* 主要问题是准确确定状态 */
+/* 持有股票 */
+/* 不持有股票，处于冷冻期 */
+/* 不持有股票，处于非冷冻期 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        vector<vector<int>> dp(3, vector<int>(prices.size(), 0));
+        dp[1][0] = -prices[0];
+        for (int i = 1; i < prices.size(); i++) {
+            dp[0][i] = max(dp[0][i - 1], dp[2][i - 1]);
+            dp[1][i] = max(dp[1][i - 1], dp[0][i - 1] - prices[i]);
+            dp[2][i] = dp[1][i - 1] + prices[i];
+        }
+        return max(dp[0].back(), dp[2].back());
     }
 };
