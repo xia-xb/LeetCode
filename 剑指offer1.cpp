@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-26 22:19:54
+ * @LastEditTime: 2021-07-28 00:19:29
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -179,6 +179,25 @@ public:
  * int param_2 = obj->deleteHead();
  */
 
+/* 10II-青蛙跳台阶问题 */
+/* 动态规划 */
+class Solution {
+public:
+    int numWays(int n) {
+        if (n <= 1) {
+            return 1;
+        }
+        int base = pow(10, 9) + 7;
+        int pre = 1, cur = 1;
+        for (int i = 2; i <= n; i++) {
+            int temp = cur;
+            cur = (pre + cur) % base;
+            pre = temp;
+        }
+        return cur;
+    }
+};
+
 /* 10I-斐波那契数列 */
 /* 动态规划 */
 class Solution {
@@ -229,5 +248,91 @@ public:
             }
         }
         return res;
+    }
+};
+
+/* 12矩阵中的路径 */
+/* 回溯法 */
+/* 注意是在相邻4个中一个满足即可 */
+/* 以及在开始回溯之前 */
+/* 需要确定匹配第一个元素 */
+class Solution {
+public:
+    int dx[4] = {-1, 0, 0, 1};
+    int dy[4] = {0, -1, 1, 0};
+    bool backtrack(string& word, int position, vector<vector<char>>& board,
+                   vector<vector<int>>& visited, int row, int col) {
+        if (position == word.size()) {
+            return true;
+        }
+        char c = word[position];
+        for (int i = 0; i < 4; i++) {
+            int x = row + dx[i], y = col + dy[i];
+            if (x < 0 || x >= board.size() || y < 0 || y >= board[0].size() ||
+                visited[x][y] || board[x][y] != c) {
+                continue;
+            }
+            visited[x][y] = 1;
+            if (backtrack(word, position + 1, board, visited, x, y)) {
+                return true;
+            }
+            visited[x][y] = 0;
+        }
+        return false;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        vector<vector<int>> visited(board.size(),
+                                    vector<int>(board[0].size(), 0));
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[0].size(); j++) {
+                if (board[i][j] == word[0]) {
+                    visited[i][j] = 1;
+                    if (backtrack(word, 1, board, visited, i, j)) {
+                        return true;
+                    }
+                    visited[i][j] = 0;
+                }
+            }
+        }
+        return false;
+    }
+};
+/* 回溯法 */
+/* 判断位置不同 */
+class Solution {
+public:
+    int dx[4] = {-1, 0, 0, 1};
+    int dy[4] = {0, -1, 1, 0};
+    int Row, Col;
+    bool backtrack(string& word, int position, vector<vector<char>>& board,
+                   vector<vector<int>>& visited, int row, int col) {
+        if (row < 0 || row >= Row || col < 0 || col >= Col ||
+            visited[row][col] || board[row][col] != word[position]) {
+            return false;
+        }
+        if (position == word.size() - 1) {
+            return true;
+        }
+        visited[row][col] = 1;
+        bool res =
+            backtrack(word, position + 1, board, visited, row - 1, col) ||
+            backtrack(word, position + 1, board, visited, row, col - 1) ||
+            backtrack(word, position + 1, board, visited, row, col + 1) ||
+            backtrack(word, position + 1, board, visited, row + 1, col);
+        visited[row][col] = 0;
+        return res;
+    }
+    bool exist(vector<vector<char>>& board, string word) {
+        Row = board.size(), Col = board[0].size();
+        vector<vector<int>> visited(board.size(),
+                                    vector<int>(board[0].size(), 0));
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[0].size(); j++) {
+                if (backtrack(word, 0, board, visited, i, j)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 };
