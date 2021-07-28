@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-28 00:19:29
+ * @LastEditTime: 2021-07-28 23:28:52
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -334,5 +334,142 @@ public:
             }
         }
         return false;
+    }
+};
+
+/* 13机器人的运动范围 */
+/* 深度优先搜索 */
+class Solution {
+public:
+    int limit;
+    int dx[4] = {-1, 0, 0, 1};
+    int dy[4] = {0, -1, 1, 0};
+    bool isAviable(int m, int n, int row, int col,
+                   vector<vector<int>>& visited) {
+        if (row < 0 || row >= m || col < 0 || col >= n || visited[row][col]) {
+            return false;
+        }
+        visited[row][col] = 1;
+        int sum = 0;
+        while (row > 0) {
+            sum += row % 10;
+            row /= 10;
+        }
+        while (col > 0) {
+            sum += col % 10;
+            col /= 10;
+        }
+        return sum <= limit;
+    }
+    int dfs(int m, int n, vector<vector<int>>& visited, int row, int col) {
+        if (!isAviable(m, n, row, col, visited)) {
+            return 0;
+        }
+        int res = 1;
+        for (int i = 0; i < 4; i++) {
+            int x = row + dx[i], y = col + dy[i];
+            res += dfs(m, n, visited, x, y);
+        }
+        return res;
+    }
+    int movingCount(int m, int n, int k) {
+        if (k < 0) {
+            return 0;
+        }
+        if (k == 0) {
+            return 1;
+        }
+        limit = k;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        return dfs(m, n, visited, 0, 0);
+    }
+};
+/* 优化代码，只需要搜索向下和向右方向 */
+class Solution {
+public:
+    int limit;
+    bool isAviable(int m, int n, int row, int col,
+                   vector<vector<int>>& visited) {
+        if (row < 0 || row >= m || col < 0 || col >= n || visited[row][col]) {
+            return false;
+        }
+        visited[row][col] = 1;
+        int sum = 0;
+        while (row > 0) {
+            sum += row % 10;
+            row /= 10;
+        }
+        while (col > 0) {
+            sum += col % 10;
+            col /= 10;
+        }
+        return sum <= limit;
+    }
+    int dfs(int m, int n, vector<vector<int>>& visited, int row, int col) {
+        if (!isAviable(m, n, row, col, visited)) {
+            return 0;
+        }
+        int res = 1;
+        res +=
+            dfs(m, n, visited, row, col + 1) + dfs(m, n, visited, row + 1, col);
+        return res;
+    }
+    int movingCount(int m, int n, int k) {
+        if (k < 0) {
+            return 0;
+        }
+        if (k == 0) {
+            return 1;
+        }
+        limit = k;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        return dfs(m, n, visited, 0, 0);
+    }
+};
+/* 广度优先搜索 */
+/* 注意入队，以及判断满足条件的时机 */
+/* 不要重复判断 */
+class Solution {
+public:
+    int limit;
+    int dx[2] = {0, 1};
+    int dy[2] = {1, 0};
+    bool isAviable(int m, int n, int row, int col,
+                   vector<vector<int>>& visited) {
+        if (row < 0 || row >= m || col < 0 || col >= n || visited[row][col]) {
+            return false;
+        }
+        visited[row][col] = 1;
+        int sum = 0;
+        while (row > 0) {
+            sum += row % 10;
+            row /= 10;
+        }
+        while (col > 0) {
+            sum += col % 10;
+            col /= 10;
+        }
+        return sum <= limit;
+    }
+    int movingCount(int m, int n, int k) {
+        limit = k;
+        int count = 0;
+        queue<pair<int, int>> que;
+        vector<vector<int>> visited(m, vector<int>(n, 0));
+        if (isAviable(m, n, 0, 0, visited)) {
+            que.push({0, 0});
+        }
+        while (!que.empty()) {
+            auto it = que.front();
+            que.pop();
+            count++;
+            for (int i = 0; i < 2; i++) {
+                int x = it.first + dx[i], y = it.second + dy[i];
+                if (isAviable(m, n, x, y, visited)) {
+                    que.push({x, y});
+                }
+            }
+        }
+        return count;
     }
 };
