@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-28 23:28:52
+ * @LastEditTime: 2021-07-29 23:16:47
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -471,5 +471,104 @@ public:
             }
         }
         return count;
+    }
+};
+
+/* 14I-剪绳子 */
+/* 动态规划 */
+/* dp[i]=max(dp[i],j*(i-j),j*dp[i-j]) */
+/* 注意一定不要漏了j*(i-j) */
+class Solution {
+public:
+    int cuttingRope(int n) {
+        vector<int> dp(n + 1, 0);
+        dp[2] = 1;
+        for (int i = 3; i <= n; i++) {
+            for (int j = 2; j < i; j++) {
+                dp[i] = max(dp[i], j * (i - j));
+                dp[i] = max(dp[i], j * dp[i - j]);
+            }
+        }
+        return dp.back();
+    }
+};
+
+/* 15二进制中1的个数 */
+/* 位与操作判断最小为是否为1 */
+class Solution {
+public:
+    int hammingWeight(uint32_t n) {
+        int res = 0;
+        while (n > 0) {
+            if (n & 1) {
+                res++;
+            }
+            n >>= 1;
+        }
+        return res;
+    }
+};
+
+/* 16数值的整数次方 */
+/* 快速幂 */
+/* 注意幂为负，以及范围问题 */
+class Solution {
+public:
+    double qpow(double x, int n) {
+        if (n == 0) {
+            return 1.00;
+        }
+        if (n % 2) {
+            return myPow(x, n - 1) * x;
+        } else {
+            double temp = myPow(x, n / 2);
+            return temp * temp;
+        }
+    }
+    double myPow(double x, int n) {
+        if (x == 1.0) {
+            return 1.0;
+        }
+        return n >= 0 ? qpow(x, n) : 1.0 / qpow(x, -(n + 1)) / x;
+    }
+};
+
+/* 17打印从1到最大的n位数 */
+/* 找到最大n位数，遍历 */
+class Solution {
+public:
+    vector<int> printNumbers(int n) {
+        int maxNum = pow(10, n) - 1;
+        vector<int> res;
+        for (int i = 1; i <= maxNum; i++) {
+            res.push_back(i);
+        }
+        return res;
+    }
+};
+
+/* 18删除链表的节点 */
+/* 找到要删除节点的前一个节点 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* deleteNode(ListNode* head, int val) {
+        ListNode* newHead = new ListNode(0, head);
+        ListNode* tail = newHead;
+        while (tail != NULL && tail->next != NULL) {
+            if (tail->next->val == val) {
+                tail->next = tail->next->next;
+                break;
+            }
+            tail = tail->next;
+        }
+        return newHead->next;
     }
 };
