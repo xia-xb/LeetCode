@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-29 23:16:47
+ * @LastEditTime: 2021-07-30 23:44:11
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -570,5 +570,61 @@ public:
             tail = tail->next;
         }
         return newHead->next;
+    }
+};
+
+/* 21调整数组顺序使奇数位于偶数前面 */
+/* 双指针 */
+class Solution {
+public:
+    vector<int> exchange(vector<int>& nums) {
+        int i = 0;
+        while (i < nums.size()) {
+            if (nums[i] % 2) {
+                i++;
+                continue;
+            }
+            int j = i + 1;
+            while (j < nums.size() && nums[j] % 2 == 0) {
+                j++;
+            }
+            if (j == nums.size() || nums[j] % 2 == 0) {
+                break;
+            }
+            swap(nums[i], nums[j]);
+            i++;
+        }
+        return nums;
+    }
+};
+/* 双指针，偶数放到后面 */
+class Solution {
+public:
+    vector<int> exchange(vector<int>& nums) {
+        int i = 0, j = nums.size() - 1;
+        while (i < j) {
+            while (i < j && nums[i] % 2) {
+                i++;
+            }
+            swap(nums[i], nums[j--]);
+        }
+        return nums;
+    }
+};
+/* 双指针，指数放到前面 */
+class Solution {
+public:
+    vector<int> exchange(vector<int>& nums) {
+        int i = 0, j = 0;
+        while (i < nums.size()) {
+            while (i < nums.size() && nums[i] % 2 == 0) {
+                i++;
+            }
+            if (i == nums.size()) {
+                break;
+            }
+            swap(nums[i++], nums[j++]);
+        }
+        return nums;
     }
 };
