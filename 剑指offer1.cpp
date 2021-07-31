@@ -1,8 +1,8 @@
 /*
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
- * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-07-30 23:44:11
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-07-31 23:28:55
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -626,5 +626,260 @@ public:
             swap(nums[i++], nums[j++]);
         }
         return nums;
+    }
+};
+
+/* 22链表中倒数第K个节点 */
+/* 双指针 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* getKthFromEnd(ListNode* head, int k) {
+        ListNode *p = head, *q = head;
+        while (k--) {
+            q = q->next;
+        }
+        while (q != NULL) {
+            p = p->next;
+            q = q->next;
+        }
+        return p;
+    }
+};
+
+/* 24反转链表 */
+/* 头插法 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* newhead = NULL;
+        ListNode* p = head;
+        while (p != NULL) {
+            ListNode* next = p->next;
+            p->next = newhead;
+            newhead = p;
+            p = next;
+        }
+        return newhead;
+    }
+};
+/* 另一种写法 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        ListNode* newhead = new ListNode(-1, NULL);
+        ListNode* p = head;
+        while (p != NULL) {
+            ListNode* next = p->next;
+            p->next = newhead->next;
+            newhead->next = p;
+            p = next;
+        }
+        return newhead->next;
+    }
+};
+/* 递归 */
+/* 注意最后通过head->next找到head的前一节点 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* reverseList(ListNode* head) {
+        if (head == NULL || head->next == NULL) {
+            return head;
+        }
+        ListNode* newhead = reverseList(head->next);
+        head->next->next = head;
+        head->next = NULL;
+        return newhead;
+    }
+};
+
+/* 25合并两个排序的链表 */
+/* 双指针 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+        ListNode* newhead = new ListNode(-1, NULL);
+        ListNode* tail = newhead;
+        while (l1 != NULL && l2 != NULL) {
+            if (l1->val <= l2->val) {
+                tail->next = l1;
+                tail = l1;
+                l1 = l1->next;
+            } else {
+                tail->next = l2;
+                tail = l2;
+                l2 = l2->next;
+            }
+        }
+        if (l1 != NULL) {
+            tail->next = l1;
+        }
+        if (l2 != NULL) {
+            tail->next = l2;
+        }
+        return newhead->next;
+    }
+};
+
+/* 26树的子结构 */
+/* 与子树类似 */
+/* 注意子结构和子树不同 */
+/* 只要某一部分相同即可满足子结构 */
+/* 重点是recur函数 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool recur(TreeNode* p, TreeNode* q) {
+        if (q == NULL) {
+            return true;
+        }
+        if (p == NULL || p->val != q->val) {
+            return false;
+        }
+        return recur(p->left, q->left) && recur(p->right, q->right);
+    }
+    bool isSubStructure(TreeNode* A, TreeNode* B) {
+        if (A == NULL && B == NULL) {
+            return true;
+        }
+        if ((A == NULL) || (B == NULL)) {
+            return false;
+        }
+        bool res1 = recur(A, B);
+        bool res2 = isSubStructure(A->left, B) || isSubStructure(A->right, B);
+        return res1 || res2;
+    }
+};
+
+/* 27二叉树的镜像 */
+/* 递归，深度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* mirrorTree(TreeNode* root) {
+        if (root == NULL) {
+            return root;
+        }
+        TreeNode* left = root->left;
+        root->left = mirrorTree(root->right);
+        root->right = mirrorTree(left);
+        return root;
+    }
+};
+
+/* 28对称的二叉树 */
+/* 深度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSym(TreeNode* left, TreeNode* right) {
+        if (left == NULL && right == NULL) {
+            return true;
+        }
+        if (left == NULL || right == NULL) {
+            return false;
+        }
+        return left->val == right->val && isSym(left->left, right->right) &&
+               isSym(left->right, right->left);
+    }
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL) {
+            return true;
+        }
+        return isSym(root->left, root->right);
+    }
+};
+/* 代码优先 */
+/* 先判断两个节点的值是否相等 */
+/* 不等则跳过，实现剪枝 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    bool isSym(TreeNode* left, TreeNode* right) {
+        if (left == NULL && right == NULL) {
+            return true;
+        }
+        if (left == NULL || right == NULL || left->val != right->val) {
+            return false;
+        }
+        return isSym(left->left, right->right) &&
+               isSym(left->right, right->left);
+    }
+    bool isSymmetric(TreeNode* root) {
+        if (root == NULL) {
+            return true;
+        }
+        return isSym(root->left, root->right);
     }
 };
