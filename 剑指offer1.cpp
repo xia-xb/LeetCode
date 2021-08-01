@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-07-31 23:28:55
+ * @LastEditTime: 2021-08-01 23:45:01
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -883,3 +883,80 @@ public:
         return isSym(root->left, root->right);
     }
 };
+
+/* 29顺时针打印矩阵 */
+/* 一层一层打印 */
+/* 重点是做到顺时针，并且判断是否已访问过 */
+class Solution {
+public:
+    int dx[4] = {0, 1, 0, -1};
+    int dy[4] = {1, 0, -1, 0};
+    int row, col;
+    bool isAviable(int r, int c, vector<vector<int>>& visited) {
+        return r >= 0 && r < row && c >= 0 && c < col && !visited[r][c];
+    }
+    void dfs(vector<vector<int>>& matrix, vector<vector<int>>& visited,
+             vector<int>& res, int r, int c) {
+        for (int i = 0; i < 4; i++) {
+            while (isAviable(r + dx[i], c + dy[i], visited)) {
+                r += dx[i];
+                c += dy[i];
+                visited[r][c] = 1;
+                res.push_back(matrix[r][c]);
+            }
+        }
+    }
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> res;
+        if (matrix.empty()) {
+            return res;
+        }
+        row = matrix.size();
+        col = matrix[0].size();
+        vector<vector<int>> visited(row, vector<int>(col, 0));
+        for (int i = 0; i <= min(row / 2, col / 2); i++) {
+            if (!isAviable(i, i, visited)) {
+                continue;
+            }
+            res.push_back(matrix[i][i]);
+            visited[i][i] = 1;
+            dfs(matrix, visited, res, i, i);
+        }
+        return res;
+    }
+};
+
+/* 30包含min函数的栈 */
+/* 栈和map */
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    stack<int> stk;
+    map<int, int> mp;
+    MinStack() {}
+
+    void push(int x) {
+        stk.push(x);
+        mp[x]++;
+    }
+
+    void pop() {
+        if (--mp[stk.top()] <= 0) {
+            mp.erase(stk.top());
+        }
+        stk.pop();
+    }
+
+    int top() { return stk.top(); }
+
+    int min() { return mp.begin()->first; }
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(x);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->min();
+ */
