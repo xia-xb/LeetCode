@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-01 23:45:01
+ * @LastEditTime: 2021-08-02 23:44:22
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -960,3 +960,248 @@ public:
  * int param_3 = obj->top();
  * int param_4 = obj->min();
  */
+/* 两个栈 */
+class MinStack {
+public:
+    /** initialize your data structure here. */
+    stack<int> stk1;
+    stack<int> stk2;
+    MinStack() {}
+
+    void push(int x) {
+        stk1.push(x);
+        if (stk2.empty() || x <= stk2.top()) {
+            stk2.push(x);
+        }
+    }
+
+    void pop() {
+        if (stk2.top() == stk1.top()) {
+            stk2.pop();
+        }
+        stk1.pop();
+    }
+
+    int top() { return stk1.top(); }
+
+    int min() { return stk2.top(); }
+};
+
+/**
+ * Your MinStack object will be instantiated and called as such:
+ * MinStack* obj = new MinStack();
+ * obj->push(x);
+ * obj->pop();
+ * int param_3 = obj->top();
+ * int param_4 = obj->min();
+ */
+
+/* 31栈的压入、弹出序列 */
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        int i = 0, length = pushed.size();
+        stack<int> stk;
+        for (int j = 0; j < length; j++) {
+            int num = popped[j];
+            if (stk.empty() || stk.top() != num) {
+                while (i < length && pushed[i] != num) {
+                    stk.push(pushed[i]);
+                    i++;
+                }
+                if (i >= length || pushed[i] != num) {
+                    return false;
+                }
+                i++;
+            } else {
+                stk.pop();
+            }
+        }
+        return true;
+    }
+};
+/* 模拟压栈、出栈 */
+class Solution {
+public:
+    bool validateStackSequences(vector<int>& pushed, vector<int>& popped) {
+        stack<int> stk;
+        int i = 0;
+        for (int j = 0; j < pushed.size(); j++) {
+            stk.push(pushed[j]);
+            while (!stk.empty() && stk.top() == popped[i]) {
+                stk.pop();
+                i++;
+            }
+        }
+        return stk.empty();
+    }
+};
+
+/* 32I-从上到下打印二叉树 */
+/* 层序遍历，队列 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> levelOrder(TreeNode* root) {
+        vector<int> res;
+        queue<TreeNode*> que;
+        if (root != NULL) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            TreeNode* it = que.front();
+            que.pop();
+            res.push_back(it->val);
+            if (it->left != NULL) {
+                que.push(it->left);
+            }
+            if (it->right != NULL) {
+                que.push(it->right);
+            }
+        }
+        return res;
+    }
+};
+
+/* 32II-从上到下打印二叉树II */
+/* 层序遍历 */
+/* 遍历每一层时确定队列size，即为该层节点个数 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        queue<TreeNode*> que;
+        if (root != NULL) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            int num = que.size();
+            vector<int> temp;
+            for (int i = 0; i < num; i++) {
+                TreeNode* it = que.front();
+                que.pop();
+                temp.push_back(it->val);
+                if (it->left != NULL) {
+                    que.push(it->left);
+                }
+                if (it->right != NULL) {
+                    que.push(it->right);
+                }
+            }
+            res.push_back(temp);
+        }
+        return res;
+    }
+};
+
+/* 32III-从上到下打印二叉树-III */
+/* 两个栈交替压栈和出栈，且压栈的顺序不同 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        stack<TreeNode*> stk1;
+        stack<TreeNode*> stk2;
+        if (root != NULL) {
+            stk1.push(root);
+        }
+        while (!stk1.empty() || !stk2.empty()) {
+            vector<int> temp;
+            if (!stk1.empty()) {
+                while (!stk1.empty()) {
+                    TreeNode* it = stk1.top();
+                    stk1.pop();
+                    temp.push_back(it->val);
+                    if (it->left != NULL) {
+                        stk2.push(it->left);
+                    }
+                    if (it->right != NULL) {
+                        stk2.push(it->right);
+                    }
+                }
+            } else {
+                while (!stk2.empty()) {
+                    TreeNode* it = stk2.top();
+                    stk2.pop();
+                    temp.push_back(it->val);
+                    if (it->right != NULL) {
+                        stk1.push(it->right);
+                    }
+                    if (it->left != NULL) {
+                        stk1.push(it->left);
+                    }
+                }
+            }
+            res.push_back(temp);
+        }
+        return res;
+    }
+};
+/* 层序遍历，偶数层反转 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> res;
+        queue<TreeNode*> que;
+        if (root != NULL) {
+            que.push(root);
+        }
+        bool isOdd = true;
+        while (!que.empty()) {
+            int num = que.size();
+            vector<int> temp;
+            while (num--) {
+                TreeNode* it = que.front();
+                que.pop();
+                temp.push_back(it->val);
+                if (it->left != NULL) {
+                    que.push(it->left);
+                }
+                if (it->right != NULL) {
+                    que.push(it->right);
+                }
+            }
+            if (!isOdd) {
+                reverse(temp.begin(), temp.end());
+            }
+            isOdd = !isOdd;
+            res.push_back(temp);
+        }
+        return res;
+    }
+};
