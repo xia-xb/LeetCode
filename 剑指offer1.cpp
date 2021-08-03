@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-02 23:44:22
+ * @LastEditTime: 2021-08-04 00:12:40
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1202,6 +1202,105 @@ public:
             isOdd = !isOdd;
             res.push_back(temp);
         }
+        return res;
+    }
+};
+
+/* 33二叉搜索树的后续遍历序列 */
+/* 利用二叉搜索树中序遍历为递增的性质 */
+/* 定义一个中序遍历数组 */
+/* 从而转化为根据中序遍历和后序遍历数组 */
+/* 能否构建树的问题 */
+class Solution {
+public:
+    bool isTree(vector<int>& postorder, vector<int>& inorder, int postbegin,
+                int postend, int inbegin, int inend) {
+        if (postbegin > postend) {
+            return true;
+        }
+        int index = inbegin, target = postorder[postend];
+        for (; index <= inend; index++) {
+            if (inorder[index] == target) {
+                break;
+            }
+        }
+        if (index > inend) {
+            return false;
+        }
+        int length = index - inbegin;
+        return isTree(postorder, inorder, postbegin, postbegin + length - 1,
+                      inbegin, index - 1) &&
+               isTree(postorder, inorder, postbegin + length, postend - 1,
+                      index + 1, inend);
+    }
+    bool verifyPostorder(vector<int>& postorder) {
+        vector<int> inorder = postorder;
+        sort(inorder.begin(), inorder.end());
+        return isTree(postorder, inorder, 0, postorder.size() - 1, 0,
+                      postorder.size() - 1);
+    }
+};
+/* 递归 */
+/* 寻找第一个大于根节点元素，从而分为左子树和右子树 */
+/* 左子树均小于根节点，已满足 */
+/* 同时右子树均大于根节点，则为二叉搜索树 */
+/* 由此不断递归 */
+class Solution {
+public:
+    bool isBST(vector<int>& postorder, int begin, int end) {
+        if (begin >= end) {
+            return true;
+        }
+        int i = begin;
+        while (postorder[i] < postorder[end]) {
+            i++;
+        }
+        int m = i;
+        while (postorder[i] > postorder[end]) {
+            i++;
+        }
+        return i == end && isBST(postorder, begin, m - 1) &&
+               isBST(postorder, m, end - 1);
+    }
+    bool verifyPostorder(vector<int>& postorder) {
+        return isBST(postorder, 0, postorder.size() - 1);
+    }
+};
+
+/* 34二叉树中和为某一值的路径 */
+/* 深度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<vector<int>> res;
+    void dfs(TreeNode* root, int target, vector<int> path, int sum) {
+        path.push_back(root->val);
+        sum += root->val;
+        if (root->left == nullptr && root->right == nullptr && sum == target) {
+            res.push_back(path);
+            return;
+        }
+        if (root->left != nullptr) dfs(root->left, target, path, sum);
+        if (root->right != nullptr) dfs(root->right, target, path, sum);
+    }
+    vector<vector<int>> pathSum(TreeNode* root, int target) {
+        if (root == nullptr) {
+            return res;
+        }
+        vector<int> path;
+        int sum = 0;
+        dfs(root, target, path, sum);
         return res;
     }
 };
