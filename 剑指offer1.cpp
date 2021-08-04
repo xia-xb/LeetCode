@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-04 00:12:40
+ * @LastEditTime: 2021-08-04 23:57:54
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1301,6 +1301,107 @@ public:
         vector<int> path;
         int sum = 0;
         dfs(root, target, path, sum);
+        return res;
+    }
+};
+
+/* 35复杂链表的复制 */
+/* 第一次遍历复制单链表，不管random */
+/* 并将新建节点和旧节点的对应用哈希表存储起来 */
+/* 第二次遍历确定每个节点的random */
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* next;
+    Node* random;
+
+    Node(int _val) {
+        val = _val;
+        next = NULL;
+        random = NULL;
+    }
+};
+*/
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        Node* newhead = new Node(-1);
+        Node *tail = newhead, *p = head;
+        map<Node*, Node*> mp;
+        while (p != NULL) {
+            Node* temp = new Node(p->val);
+            mp[p] = temp;
+            tail->next = temp;
+            tail = temp;
+            p = p->next;
+        }
+        tail->next = NULL;
+        p = head;
+        tail = newhead->next;
+        while (p != NULL) {
+            tail->random = p->random != NULL ? mp[p->random] : NULL;
+            p = p->next;
+            tail = tail->next;
+        }
+        return newhead->next;
+    }
+};
+/* 第一遍只建立哈希表对应关系 */
+/* 第二遍确定新建链表的next,random */
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (head == NULL) {
+            return NULL;
+        }
+        unordered_map<Node*, Node*> mp;
+        Node* p = head;
+        while (p != NULL) {
+            mp[p] = new Node(p->val);
+            p = p->next;
+        }
+        p = head;
+        while (p != NULL) {
+            mp[p]->next = mp[p->next];
+            mp[p]->random = mp[p->random];
+            p = p->next;
+        }
+        return mp[head];
+    }
+};
+/* 拼接和拆分 */
+/* 注意拆分的代码，并且确定random和拆分不能一起实现 */
+class Solution {
+public:
+    Node* copyRandomList(Node* head) {
+        if (head == NULL) {
+            return NULL;
+        }
+        Node* p = head;
+        while (p != NULL) {
+            Node* node = new Node(p->val);
+            node->next = p->next;
+            p->next = node;
+            p = node->next;
+        }
+        p = head;
+        while (p != NULL) {
+            if (p->random != NULL) {
+                p->next->random = p->random->next;
+            }
+            p = p->next->next;
+        }
+        p = head;
+        Node *res = head->next, *q = head->next;
+        while (q->next != NULL) {
+            p->next = p->next->next;
+            q->next = q->next->next;
+            p = p->next;
+            q = q->next;
+        }
+        p->next = NULL;
         return res;
     }
 };
