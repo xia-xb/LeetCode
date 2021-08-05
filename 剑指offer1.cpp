@@ -1,8 +1,8 @@
 /*
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
- * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-04 23:57:54
+ * @LastEditors: 夏玄兵
+ * @LastEditTime: 2021-08-05 23:13:18
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1403,5 +1403,95 @@ public:
         }
         p->next = NULL;
         return res;
+    }
+};
+
+/* 36二叉搜索树与双向链表 */
+/* 中序遍历，迭代 */
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* left;
+    Node* right;
+
+    Node() {}
+
+    Node(int _val) {
+        val = _val;
+        left = NULL;
+        right = NULL;
+    }
+
+    Node(int _val, Node* _left, Node* _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+public:
+    Node* treeToDoublyList(Node* root) {
+        if (root == NULL) {
+            return NULL;
+        }
+        stack<Node*> stk;
+        Node *head = NULL, *pre = NULL;
+        while (!stk.empty() || root != NULL) {
+            while (root != NULL) {
+                stk.push(root);
+                root = root->left;
+            }
+            if (!stk.empty()) {
+                root = stk.top();
+                stk.pop();
+                if (head == NULL) {
+                    head = root;
+                    pre = root;
+                } else {
+                    pre->right = root;
+                    root->left = pre;
+                    pre = root;
+                }
+                root = root->right;
+            }
+        }
+        head->left = pre;
+        pre->right = head;
+        return head;
+    }
+};
+/* 中序遍历，递归 */
+/* 不考虑具体细节，定义双向链表的头尾节点 */
+/* 然后，递归时不断将当前节点和尾结点连接 */
+class Solution {
+public:
+    Node* treeToDoublyList(Node* root) {
+        if (root == NULL) {
+            return NULL;
+        }
+        dfs(root);
+        head->left = tail;
+        tail->right = head;
+        return head;
+    }
+
+private:
+    Node *head, *tail;
+    void dfs(Node* root) {
+        if (root == NULL) {
+            return;
+        }
+        dfs(root->left);
+        if (tail != NULL) {
+            tail->right = root;
+        } else {
+            head = root;
+        }
+        root->left = tail;
+        tail = root;
+        dfs(root->right);
     }
 };
