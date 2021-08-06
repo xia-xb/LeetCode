@@ -1,8 +1,8 @@
 /*
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
- * @LastEditors: 夏玄兵
- * @LastEditTime: 2021-08-05 23:13:18
+ * @LastEditors: Please set LastEditors
+ * @LastEditTime: 2021-08-06 22:44:12
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1493,5 +1493,106 @@ private:
         root->left = tail;
         tail = root;
         dfs(root->right);
+    }
+};
+
+/* 38字符串的排列 */
+/* 回溯法 */
+/* 注意去重方法，同一层相同元素只能遍历一次 */
+/* 注意条件为 i>0 && !visited[i-1] && s[i]==s[i-1] */
+class Solution {
+public:
+    vector<string> res;
+    void backtrack(string& s, string& path, vector<int>& visited) {
+        int n = s.size();
+        if (n == path.size()) {
+            res.push_back(path);
+            return;
+        }
+        for (int i = 0; i < n; ++i) {
+            if (visited[i] || (i > 0 && !visited[i - 1] && s[i] == s[i - 1])) {
+                continue;
+            }
+            path += s[i];
+            visited[i] = 1;
+            backtrack(s, path, visited);
+            path.erase(path.size() - 1, 1);
+            visited[i] = 0;
+        }
+    }
+    vector<string> permutation(string s) {
+        sort(s.begin(), s.end());
+        string path;
+        vector<int> visited(s.size(), 0);
+        backtrack(s, path, visited);
+        return res;
+    }
+};
+
+/* 39数组中出现次数超过一半的数字 */
+/* 先对数组排序 */
+/* 双指针遍历，统计出现次数 */
+class Solution {
+public:
+    int majorityElement(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int res = nums[0], count = 0;
+        ;
+        for (int i = 0; i < nums.size();) {
+            int num = nums[i], j = i + 1;
+            while (j < nums.size() && nums[j] == num) {
+                j++;
+            }
+            if (count < j - i) {
+                count = j - i;
+                res = num;
+            }
+            i = j;
+        }
+        return res;
+    }
+};
+
+/* 40最小的k个数 */
+/* 排序，遍历 */
+public:
+vector<int> getLeastNumbers(vector<int>& arr, int k) {
+    if (k == 0) {
+        return {};
+    }
+    sort(arr.begin(), arr.end());
+    vector<int> res;
+    for (int i = 0; i < arr.size(); i++) {
+        res.push_back(arr[i]);
+        if (res.size() == k) {
+            break;
+        }
+    }
+    return res;
+}
+}
+;
+/* 排序，使用vector构造函数 */
+class Solution {
+public:
+    vector<int> getLeastNumbers(vector<int>& arr, int k) {
+        sort(arr.begin(), arr.end());
+        vector<int> res(arr.begin(), arr.begin() + k);
+        return res;
+    }
+};
+
+/* 42连续子数组的最大和 */
+/* 动态规划 */
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        vector<int> dp = nums;
+        int res = nums[0];
+        for (int i = 1; i < nums.size(); i++) {
+            dp[i] = dp[i - 1] > 0 ? dp[i - 1] + nums[i] : nums[i];
+            res = max(res, dp[i]);
+        }
+        return res;
     }
 };
