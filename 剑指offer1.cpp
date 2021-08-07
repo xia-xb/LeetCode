@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-06 22:44:12
+ * @LastEditTime: 2021-08-07 22:30:24
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1594,5 +1594,29 @@ public:
             res = max(res, dp[i]);
         }
         return res;
+    }
+};
+
+/* 43 1~n整数中1出现的次数 */
+/* 重点关注如何计算每一位出现1的次数 */
+class Solution {
+public:
+    int countDigitOne(int n) {
+        long high = n / 10, cur = n % 10, low = 0, digit = 1;
+        long res = 0;
+        while (high != 0 || cur != 0) {
+            if (cur == 1) {
+                res += high * digit + low + 1;
+            } else if (cur < 1) {
+                res += high * digit;
+            } else {
+                res += (high + 1) * digit;
+            }
+            low += cur * digit;
+            cur = high % 10;
+            high /= 10;
+            digit *= 10;
+        }
+        return int(res);
     }
 };
