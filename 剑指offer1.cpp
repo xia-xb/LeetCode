@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-07 22:30:24
+ * @LastEditTime: 2021-08-08 23:43:13
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1618,5 +1618,129 @@ public:
             digit *= 10;
         }
         return int(res);
+    }
+};
+
+/* 44数字序列中某一位的数字 */
+/* 确定位数、数、数中对应的位置 */
+/* 最后确定数中对应的位置注意转换为字符串 */
+class Solution {
+public:
+    int findNthDigit(int n) {
+        if (n < 10) {
+            return n;
+        }
+        long count = 1, sum = 9, pre = 9;
+        while (sum < n) {
+            count++;
+            pre *= 10;
+            sum += pre * count;
+        }
+        if (sum == n) {
+            return 9;
+        }
+        sum -= pre * count;
+        n -= sum;
+        int res = pre / 9 + (n - 1) / count;
+        string s = to_string(res);
+        return s[(n - 1) % count] - '0';
+    }
+};
+
+/* 46把数字翻译成字符串 */
+/* 动态规划 */
+/* 先将int转为string */
+/* dp[i]为0~i个字符的翻译方法 */
+class Solution {
+public:
+    bool isAviable(char c1, char c2) {
+        return (c1 - '0') > 0 && (c1 - '0') * 10 + c2 - '0' <= 25;
+    }
+    int translateNum(int num) {
+        string s = to_string(num);
+        vector<int> dp(s.size(), 0);
+        dp[0] = 1;
+        for (int i = 1; i < s.size(); i++) {
+            dp[i] = dp[i - 1];
+            if (isAviable(s[i - 1], s[i])) {
+                if (i >= 2) {
+                    dp[i] += dp[i - 2];
+                } else {
+                    dp[i]++;
+                }
+            }
+        }
+        return dp.back();
+    }
+};
+
+/* 47礼物的最大价值 */
+/* 递归或者回溯 */
+/* 应该可以，提交超时 */
+class Solution {
+public:
+    int dx[2] = {0, 1};
+    int dy[2] = {1, 0};
+    int value(vector<vector<int>>& grid, int row, int col) {
+        if (row == grid.size() - 1 && col == grid[0].size() - 1) {
+            return 0;
+        }
+        int res = 0;
+        for (int i = 0; i < 2; i++) {
+            int x = row + dx[i], y = col + dy[i];
+            if (x < grid.size() && y < grid[0].size()) {
+                res = max(res, grid[x][y] + value(grid, x, y));
+            }
+        }
+        return res;
+    }
+    int maxValue(vector<vector<int>>& grid) {
+        return grid[0][0] + value(grid, 0, 0);
+    }
+};
+/* 动态规划 */
+/* dp[i][j]为到达(i,j)时礼物最大价值 */
+class Solution {
+public:
+    int dx[2] = {0, -1};
+    int dy[2] = {-1, 0};
+    int maxValue(vector<vector<int>>& grid) {
+        vector<vector<int>> dp(grid.size(), vector<int>(grid[0].size(), 0));
+        dp[0][0] = grid[0][0];
+        int m = grid.size(), n = grid[0].size();
+        for (int i = 0; i < m; i++) {
+            int j = i == 0 ? 1 : 0;
+            for (; j < n; j++) {
+                for (int k = 0; k < 2; k++) {
+                    int x = i + dx[k], y = j + dy[k];
+                    if (x >= 0 && x < m && y >= 0 && y < n) {
+                        dp[i][j] = max(dp[i][j], grid[i][j] + dp[x][y]);
+                    }
+                }
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+};
+
+/* 48最长不包含重复字符的子字符串 */
+/* 哈希表统计字符出现次数 */
+/* 滑动窗口 */
+class Solution {
+public:
+    int lengthOfLongestSubstring(string s) {
+        unordered_map<char, int> mp;
+        int res = 0;
+        int left = 0, right = 0;
+        while (right < s.size()) {
+            char c = s[right++];
+            mp[c]++;
+            while (mp[c] > 1) {
+                mp[s[left]]--;
+                left++;
+            }
+            res = max(res, right - left);
+        }
+        return res;
     }
 };
