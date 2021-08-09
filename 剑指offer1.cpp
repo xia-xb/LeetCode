@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-08 23:43:13
+ * @LastEditTime: 2021-08-09 20:50:00
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1742,5 +1742,52 @@ public:
             res = max(res, right - left);
         }
         return res;
+    }
+};
+
+/* 49丑数 */
+/* 动态规划 */
+class Solution {
+public:
+    int min(int num1, int num2, int num3) {
+        int res = num1 <= num2 ? num1 : num2;
+        return res <= num3 ? res : num3;
+    }
+    int nthUglyNumber(int n) {
+        vector<int> dp(n, 0);
+        dp[0] = 1;
+        int a = 0, b = 0, c = 0;
+        for (int i = 1; i < n; i++) {
+            int num1 = dp[a] * 2, num2 = dp[b] * 3, num3 = dp[c] * 5;
+            dp[i] = min(num1, num2, num3);
+            if (dp[i] == num1) {
+                a++;
+            }
+            if (dp[i] == num2) {
+                b++;
+            }
+            if (dp[i] == num3) {
+                c++;
+            }
+        }
+        return dp.back();
+    }
+};
+
+/* 50第一个只出现一次的字符 */
+/* 哈希表，遍历 */
+class Solution {
+public:
+    char firstUniqChar(string s) {
+        unordered_map<char, int> mp;
+        for (int i = 0; i < s.size(); i++) {
+            mp[s[i]]++;
+        }
+        for (int i = 0; i < s.size(); i++) {
+            if (mp[s[i]] == 1) {
+                return s[i];
+            }
+        }
+        return ' ';
     }
 };
