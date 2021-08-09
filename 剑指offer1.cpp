@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-09 20:50:00
+ * @LastEditTime: 2021-08-09 22:51:24
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1789,5 +1789,115 @@ public:
             }
         }
         return ' ';
+    }
+};
+
+/* 52两个链表的第一个公共节点 */
+/* 遍历 */
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+        ListNode *p = headA, *q = headB;
+        ListNode *heada = headA, *headb = headB;
+        while (p != NULL && q != NULL) {
+            p = p->next;
+            q = q->next;
+        }
+        while (p != NULL) {
+            heada = heada->next;
+            p = p->next;
+        }
+        while (q != NULL) {
+            headb = headb->next;
+            q = q->next;
+        }
+        p = heada;
+        q = headb;
+        while (p != NULL && q != NULL) {
+            if (p == q) {
+                return p;
+            }
+            p = p->next;
+            q = q->next;
+        }
+        return NULL;
+    }
+};
+
+/* 53 I-在排序数组中查找数字I */
+/* 分别查找左右位置 */
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0, right = nums.size() - 1;
+        while (left <= right && nums[left] != target) {
+            left++;
+        }
+        if (left > right) {
+            return 0;
+        }
+        while (right >= left && nums[right] != target) {
+            right--;
+        }
+        return right - left + 1;
+    }
+};
+/* 二分查找确定左右边界 */
+class Solution {
+public:
+    int search(vector<int>& nums, int target) {
+        int left = 0, right = nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int val = nums[mid];
+            if (val == target) {
+                right = mid - 1;
+            } else if (val < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        if (left == nums.size() || nums[left] != target) {
+            return 0;
+        }
+        int first = left;
+        left = 0;
+        right = nums.size() - 1;
+        while (left <= right) {
+            int mid = left + (right - left) / 2;
+            int val = nums[mid];
+            if (val == target) {
+                left = mid + 1;
+            } else if (val < target) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        int second = right;
+        return second - first + 1;
+    }
+};
+
+/* 53 II-o~n-1中缺失的数字 */
+/* 遍历 */
+class Solution {
+public:
+    int missingNumber(vector<int>& nums) {
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] != i) {
+                return i;
+            }
+        }
+        return nums.size();
     }
 };
