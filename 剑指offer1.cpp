@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-09 22:51:24
+ * @LastEditTime: 2021-08-10 22:16:07
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -1899,5 +1899,147 @@ public:
             }
         }
         return nums.size();
+    }
+};
+
+/* 54二叉搜索树的第k大节点 */
+/* 中序遍历，返回数组倒数第k个元素 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> num;
+    void dfs(TreeNode* root) {
+        if (root == NULL) {
+            return;
+        }
+        dfs(root->left);
+        num.push_back(root->val);
+        dfs(root->right);
+    }
+    int kthLargest(TreeNode* root, int k) {
+        dfs(root);
+        return *(num.end() - k);
+    }
+};
+/* 逆中序遍历，并且提前退出递归 */
+/* 注意递归结束的条件 */
+class Solution {
+public:
+    int res, count;
+    void dfs(TreeNode* root) {
+        if (root == NULL) {
+            return;
+        }
+        dfs(root->right);
+        if (count == 0) {
+            return;
+        }
+        if (--count == 0) {
+            res = root->val;
+        }
+        dfs(root->left);
+    }
+    int kthLargest(TreeNode* root, int k) {
+        count = k;
+        dfs(root);
+        return res;
+    }
+};
+
+/* 55 I-二叉树的深度 */
+/* 层序遍历，队列 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int maxDepth(TreeNode* root) {
+        int res = 0;
+        queue<TreeNode*> que;
+        if (root != NULL) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            int num = que.size();
+            res++;
+            while (num--) {
+                TreeNode* it = que.front();
+                que.pop();
+                if (it->left != NULL) {
+                    que.push(it->left);
+                }
+                if (it->right != NULL) {
+                    que.push(it->right);
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 55 II-平衡二叉树 */
+/* 后序遍历得到树的深度 */
+/* 同时判断子树是否平衡 */
+/* 若不平衡直接返回-1，表示不平衡 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    int depth(TreeNode* root) {
+        if (root == NULL) {
+            return 0;
+        }
+        int leftDepth = depth(root->left);
+        int rightDepth = depth(root->right);
+        if (leftDepth == -1 || rightDepth == -1 ||
+            abs(leftDepth - rightDepth) > 1) {
+            return -1;
+        }
+        return max(leftDepth, rightDepth) + 1;
+    }
+    bool isBalanced(TreeNode* root) { return depth(root) != -1; }
+};
+
+/* 56 I-数组中数字出现的次数 */
+/* 排序，遍历 */
+/* 若为重复数字每两个遍历一次 */
+class Solution {
+public:
+    vector<int> singleNumbers(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        vector<int> res;
+        for (int i = 0; i < nums.size() - 1; i++) {
+            if (nums[i] == nums[i + 1]) {
+                i++;
+            } else {
+                res.push_back(nums[i]);
+                if (res.size() == 2) {
+                    return res;
+                }
+            }
+        }
+        res.push_back(nums.back());
+        return res;
     }
 };
