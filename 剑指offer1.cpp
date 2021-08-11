@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-10 22:16:07
+ * @LastEditTime: 2021-08-11 23:22:52
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -2040,6 +2040,146 @@ public:
             }
         }
         res.push_back(nums.back());
+        return res;
+    }
+};
+/* 分组异或 */
+/* 注意整型异或的结果不一定是0或1，也有可能大于1 */
+class Solution {
+public:
+    vector<int> singleNumbers(vector<int>& nums) {
+        int m = 1, n = 0, x = 0, y = 0;
+        for (int num : nums) {
+            n ^= num;
+        }
+        while ((m & n) == 0) {
+            m <<= 1;
+        }
+        for (int num : nums) {
+            if ((num & m) == 0) {
+                x ^= num;
+            } else {
+                y ^= num;
+            }
+        }
+        return vector<int>{x, y};
+    }
+};
+
+/* 56 II-数组中数字出现的次数II */
+/* 哈希表 */
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int num : nums) {
+            mp[num]++;
+        }
+        for (auto it : mp) {
+            if (it.second == 1) {
+                return it.first;
+            }
+        }
+        return 0;
+    }
+};
+
+/* 57和为s的两个数字 */
+/* 二分查找 */
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int> res;
+        int left = 0, right = nums.size() - 1;
+        while (left < right) {
+            int val = nums[left] + nums[right];
+            if (val == target) {
+                return vector<int>{nums[left], nums[right]};
+            } else if (val < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return res;
+    }
+};
+
+/* 57 II-和为s的连续整数序列II */
+/* 双指针 */
+class Solution {
+public:
+    vector<vector<int>> findContinuousSequence(int target) {
+        vector<vector<int>> res;
+        if (target == 1) {
+            return res;
+        }
+        int right = 1, sum = 0;
+        vector<int> tmp;
+        while (right < target) {
+            tmp.push_back(right);
+            sum += right++;
+            while (sum > target) {
+                sum -= tmp[0];
+                tmp.erase(tmp.begin());
+            }
+            if (sum == target) {
+                res.push_back(tmp);
+            }
+        }
+        return res;
+    }
+};
+/* 另一种写法 */
+class Solution {
+public:
+    vector<vector<int>> findContinuousSequence(int target) {
+        vector<vector<int>> res;
+        if (target == 1) {
+            return res;
+        }
+        int left = 0, right = 1, sum = 0;
+        while (left < right && right < target) {
+            sum += right;
+            right++;
+            while (sum > target) {
+                left++;
+                sum -= left;
+            }
+            if (sum == target) {
+                vector<int> tmp;
+                for (int i = left + 1; i < right; i++) {
+                    tmp.push_back(i);
+                }
+                res.push_back(tmp);
+            }
+        }
+        return res;
+    }
+};
+
+/* 58 I-翻转单词顺序 */
+/* 双指针 */
+class Solution {
+public:
+    string reverseWords(string s) {
+        string res;
+        int left = s.size() - 1, right = s.size() - 1;
+        while (left >= 0) {
+            right = left;
+            while (right >= 0 && s[right] == ' ') {
+                right--;
+            }
+            if (right < 0) {
+                break;
+            }
+            left = right - 1;
+            while (left >= 0 && s[left] != ' ') {
+                left--;
+            }
+            res += s.substr(left + 1, right - left) + " ";
+        }
+        res.pop_back();
         return res;
     }
 };
