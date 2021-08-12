@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-11 23:22:52
+ * @LastEditTime: 2021-08-12 23:39:50
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -2180,6 +2180,37 @@ public:
             res += s.substr(left + 1, right - left) + " ";
         }
         res.pop_back();
+        return res;
+    }
+};
+
+/* 58 II-左旋转字符串 */
+/* 字串，遍历 */
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        if (n == 0) {
+            return s;
+        }
+        string str = s.substr(0, n);
+        int length = s.size();
+        for (int i = 0; i < length; i++) {
+            s[i] = i < length - n ? s[i + n] : str[i - length + n];
+        }
+        return s;
+    }
+};
+/* 新建结果字符串 */
+class Solution {
+public:
+    string reverseLeftWords(string s, int n) {
+        string res = "";
+        for (int i = n; i < s.size(); i++) {
+            res += s[i];
+        }
+        for (int i = 0; i < n; i++) {
+            res += s[i];
+        }
         return res;
     }
 };
