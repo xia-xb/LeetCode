@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-12 23:39:50
+ * @LastEditTime: 2021-08-15 00:09:55
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -2212,5 +2212,153 @@ public:
             res += s[i];
         }
         return res;
+    }
+};
+
+/* 59 I-滑动窗口的最大值 */
+/* 滑动窗口，优先队列，最大堆 */
+/* 注意堆中放pair存储元素以及位置 */
+/* 并且同时保证最大值在滑动窗口中 */
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        vector<int> res;
+        if (nums.empty()) {
+            return res;
+        }
+        priority_queue<pair<int, int>> que;
+        for (int i = 0; i < k; i++) {
+            que.push({nums[i], i});
+        }
+        res.push_back(que.top().first);
+        for (int i = k; i < nums.size(); i++) {
+            que.push({nums[i], i});
+            while (que.top().second <= i - k) {
+                que.pop();
+            }
+            res.push_back(que.top().first);
+        }
+        return res;
+    }
+};
+/* 单调队列 */
+class Solution {
+public:
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        vector<int> res;
+        if (nums.empty()) {
+            return res;
+        }
+        deque<int> deq;
+        for (int i = 0; i < k; i++) {
+            while (!deq.empty() && nums[deq.back()] <= nums[i]) {
+                deq.pop_back();
+            }
+            deq.push_back(i);
+        }
+        res.push_back(nums[deq.front()]);
+        for (int i = k; i < nums.size(); i++) {
+            while (!deq.empty() && nums[deq.back()] <= nums[i]) {
+                deq.pop_back();
+            }
+            deq.push_back(i);
+            while (deq.front() <= i - k) {
+                deq.pop_front();
+            }
+            res.push_back(nums[deq.front()]);
+        }
+        return res;
+    }
+};
+
+/* 59 II-队列的最大值 */
+/* 单调队列 */
+/* 与上一题不同的事单调队列中可以保存重复值 */
+class MaxQueue {
+public:
+    queue<int> que;
+    deque<int> deq;
+    MaxQueue() {}
+
+    int max_value() {
+        if (que.empty()) {
+            return -1;
+        }
+        return deq.front();
+    }
+
+    void push_back(int value) {
+        que.push(value);
+        while (!deq.empty() && deq.back() < value) {
+            deq.pop_back();
+        }
+        deq.push_back(value);
+    }
+
+    int pop_front() {
+        if (que.empty()) {
+            return -1;
+        }
+        int value = que.front();
+        que.pop();
+        int count = 0;
+        while (!deq.empty() && deq.front() <= value && count == 0) {
+            deq.pop_front();
+            count++;
+        }
+        return value;
+    }
+};
+/* 优化上面代码 */
+class MaxQueue {
+public:
+    queue<int> que;
+    deque<int> deq;
+    MaxQueue() {}
+
+    int max_value() {
+        if (que.empty()) {
+            return -1;
+        }
+        return deq.front();
+    }
+
+    void push_back(int value) {
+        que.push(value);
+        while (!deq.empty() && deq.back() < value) {
+            deq.pop_back();
+        }
+        deq.push_back(value);
+    }
+
+    int pop_front() {
+        if (que.empty()) {
+            return -1;
+        }
+        int value = que.front();
+        que.pop();
+        if (deq.front() == value) {
+            deq.pop_front();
+        }
+        return value;
+    }
+};
+
+/* 60 n个骰子的点数 */
+/* 动态规划 */
+class Solution {
+public:
+    vector<double> dicesProbability(int n) {
+        vector<double> dp(6, 1.0 / 6.0);
+        for (int i = 2; i <= n; i++) {
+            vector<double> tmp(5 * i + 1, 0.0);
+            for (int j = 0; j < dp.size(); j++) {
+                for (int k = 0; k < 6; k++) {
+                    tmp[j + k] += dp[j] / 6.0;
+                }
+            }
+            dp = tmp;
+        }
+        return dp;
     }
 };
