@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-15 00:09:55
+ * @LastEditTime: 2021-08-15 23:39:33
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -2360,5 +2360,46 @@ public:
             dp = tmp;
         }
         return dp;
+    }
+};
+
+/* 61 扑克牌中的顺子 */
+/* 遍历，注意开始位置 */
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int count = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            if (nums[i] == 0) {
+                count++;
+            }
+        }
+        int pre = nums[count];
+        for (int i = count + 1; i < nums.size(); i++) {
+            if (nums[i] == pre || nums[i] > pre + count + 1) {
+                return false;
+            } else {
+                count -= nums[i] - pre - 1;
+                pre = nums[i];
+            }
+        }
+        return true;
+    }
+};
+/* 0除外的最大最小值相差不超过4 */
+class Solution {
+public:
+    bool isStraight(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int count = 0;
+        for (int i = 0; i < nums.size() - 1; i++) {
+            if (nums[i] == 0) {
+                count++;
+            } else if (nums[i] == nums[i + 1]) {
+                return false;
+            }
+        }
+        return nums[4] - nums[count] <= 4;
     }
 };
