@@ -2,7 +2,7 @@
  * @Author: 夏玄兵
  * @Date: 2021-07-23 23:19:42
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2021-08-15 23:39:33
+ * @LastEditTime: 2021-08-16 23:03:23
  * @Description: file content
  * @FilePath: \LeetCode\剑指offer1.cpp
  */
@@ -2401,5 +2401,143 @@ public:
             }
         }
         return nums[4] - nums[count] <= 4;
+    }
+};
+
+/* 63 股票的最大利润 */
+/* 动态规划 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        int n = prices.size();
+        vector<vector<int>> dp(n, vector<int>(2, 0));
+        dp[0][0] = -prices[0];
+        dp[0][1] = 0;
+        for (int i = 1; i < n; i++) {
+            dp[i][0] = max(dp[i - 1][0], -prices[i]);
+            dp[i][1] = max(dp[i - 1][1], prices[i] + dp[i - 1][0]);
+        }
+        return dp[n - 1][1];
+    }
+};
+/* 内存优化 */
+class Solution {
+public:
+    int maxProfit(vector<int>& prices) {
+        if (prices.size() <= 1) {
+            return 0;
+        }
+        int n = prices.size();
+        vector<int> pre(2, 0);
+        pre[0] = -prices[0];
+        pre[1] = 0;
+        for (int i = 1; i < n; i++) {
+            pre[1] = max(pre[1], prices[i] + pre[0]);
+            pre[0] = max(pre[0], -prices[i]);
+        }
+        return pre[1];
+    }
+};
+
+/* 64 求1+2+...+n */
+/* 逻辑运算符的短路性质 */
+class Solution {
+public:
+    int sumNums(int n) {
+        n >= 1 && (n += sumNums(n - 1));
+        return n;
+    }
+};
+
+/* 66 构建乘积数组 */
+/* 前缀和 */
+class Solution {
+public:
+    vector<int> constructArr(vector<int>& a) {
+        int n = a.size();
+        vector<int> pre(n, 1);
+        vector<int> rear(n, 1);
+        for (int i = 1; i < n; i++) {
+            pre[i] = pre[i - 1] * a[i - 1];
+            rear[n - i - 1] = rear[n - i] * a[n - i];
+        }
+        vector<int> res;
+        for (int i = 0; i < n; i++) {
+            res.push_back(pre[i] * rear[i]);
+        }
+        return res;
+    }
+};
+
+/* 68 I-二叉搜索树的最近公共祖先 */
+/* 深度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        int rootVal = root->val, pVal = p->val, qVal = q->val;
+        if (rootVal == pVal || rootVal == qVal ||
+            (rootVal > pVal ^ rootVal > qVal)) {
+            return root;
+        }
+        if (rootVal > pVal) {
+            return lowestCommonAncestor(root->left, p, q);
+        }
+        return lowestCommonAncestor(root->right, p, q);
+    }
+};
+/* 递归写法 */
+class Solution {
+public:
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        TreeNode* ancestor = root;
+        int maxval = max(p->val, q->val);
+        int minval = min(p->val, q->val);
+        while (true) {
+            if (maxval < ancestor->val) {
+                ancestor = ancestor->left;
+            } else if (minval > ancestor->val) {
+                ancestor = ancestor->right;
+            } else {
+                break;
+            }
+        }
+        return ancestor;
+    }
+};
+
+/* 68 II-二叉树的最近公共祖先 */
+/* 深度有限搜索 */
+/* 判断节点下是否包含p或q */
+/* 左右都包含，或者左或右包含且本身为某一节点，则返回 */
+class Solution {
+public:
+    TreeNode* res;
+    bool dfs(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (root == NULL) {
+            return false;
+        }
+        bool left = dfs(root->left, p, q);
+        bool right = dfs(root->right, p, q);
+        if ((left && right) ||
+            ((root->val == p->val || root->val == q->val) && (left || right))) {
+            res = root;
+        }
+        return left || right || root->val == p->val || root->val == q->val;
+    }
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        dfs(root, p, q);
+        return res;
     }
 };
