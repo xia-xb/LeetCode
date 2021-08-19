@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-19 00:11:30
+ * @LastEditTime: 2021-08-20 00:01:28
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -84,4 +84,93 @@ public:
         }
         return dp;
     }
+};
+
+/* 4 只出现一次的数字 */
+/* 哈希表 */
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        unordered_map<int, int> mp;
+        for (int i = 0; i < nums.size(); i++) {
+            mp[nums[i]]++;
+        }
+        for (auto it : mp) {
+            if (it.second == 1) {
+                return it.first;
+            }
+        }
+        return 0;
+    }
+};
+/* 统计各位1的个数，之后对3取余 */
+class Solution {
+public:
+    int singleNumber(vector<int>& nums) {
+        int res = 0;
+        int count[32] = {0};
+        for (int i = 0; i < nums.size(); i++) {
+            int num = nums[i];
+            for (int j = 0; j < 32; j++) {
+                count[j] += num & 1;
+                num >>= 1;
+            }
+        }
+        for (int i = 0; i < 32; i++) {
+            res <<= 1;
+            res |= count[31 - i] % 3;
+        }
+        return res;
+    }
+};
+
+/* 43 往完全二叉树添加节点 */
+/* 数组存储完全二叉树 */
+/* 根据完全二叉树性质添加节点，得到父节点 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class CBTInserter {
+public:
+    vector<TreeNode*> vec;
+    CBTInserter(TreeNode* root) {
+        queue<TreeNode*> que;
+        if (root != nullptr) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            root = que.front();
+            que.pop();
+            vec.push_back(root);
+            if (root->left != nullptr) {
+                que.push(root->left);
+            }
+            if (root->right != nullptr) {
+                que.push(root->right);
+            }
+        }
+    }
+
+    int insert(int v) {
+        TreeNode* tmp = new TreeNode(v);
+        vec.push_back(tmp);
+        int length = vec.size();
+        if (length % 2 == 1) {
+            vec[length / 2 - 1]->right = tmp;
+        } else {
+            vec[length / 2 - 1]->left = tmp;
+        }
+        return vec[length / 2 - 1]->val;
+    }
+
+    TreeNode* get_root() { return vec.empty() ? nullptr : vec[0]; }
 };
