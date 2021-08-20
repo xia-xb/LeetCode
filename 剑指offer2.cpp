@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-20 00:01:28
+ * @LastEditTime: 2021-08-20 23:54:51
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -173,4 +173,229 @@ public:
     }
 
     TreeNode* get_root() { return vec.empty() ? nullptr : vec[0]; }
+};
+/* 队列存储左右节点存在空节点的节点 */
+class CBTInserter {
+public:
+    TreeNode* rt;
+    queue<TreeNode*> que;
+    CBTInserter(TreeNode* root) {
+        if (root == nullptr) {
+            rt = nullptr;
+            return;
+        }
+        rt = root;
+        que.push(root);
+        while (!que.empty()) {
+            root = que.front();
+            if (root->left == nullptr || root->right == nullptr) {
+                if (root->left != nullptr) {
+                    que.push(root->left);
+                }
+                break;
+            }
+            que.pop();
+            que.push(root->left);
+            que.push(root->right);
+        }
+    }
+
+    int insert(int v) {
+        TreeNode* newNode = new TreeNode(v);
+        if (que.empty()) {
+            rt = newNode;
+            que.push(newNode);
+            return 0;
+        }
+        que.push(newNode);
+        TreeNode* it = que.front();
+        if (it->left == nullptr) {
+            it->left = newNode;
+        } else {
+            it->right = newNode;
+            que.pop();
+        }
+        return it->val;
+    }
+
+    TreeNode* get_root() { return rt; }
+};
+
+/* 44 二叉树每层的最大值 */
+/* 广度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> largestValues(TreeNode* root) {
+        vector<int> res;
+        queue<TreeNode*> que;
+        if (root != nullptr) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            int num = que.size();
+            int val = INT_MIN;
+            while (num--) {
+                TreeNode* it = que.front();
+                que.pop();
+                if (it->left != nullptr) {
+                    que.push(it->left);
+                }
+                if (it->right != nullptr) {
+                    que.push(it->right);
+                }
+                val = max(val, it->val);
+            }
+            res.push_back(val);
+        }
+        return res;
+    }
+};
+
+/* 45 二叉树最底层最左边的值 */
+/* 广度优先搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int findBottomLeftValue(TreeNode* root) {
+        int res;
+        queue<TreeNode*> que;
+        if (root != nullptr) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            int num = que.size();
+            res = que.front()->val;
+            while (num--) {
+                TreeNode* it = que.front();
+                que.pop();
+                if (it->left != nullptr) {
+                    que.push(it->left);
+                }
+                if (it->right != nullptr) {
+                    que.push(it->right);
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 46 二叉树的右侧视图 */
+/* 广度优先搜索 */
+/* 每一层最右侧节点 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        vector<int> res;
+        queue<TreeNode*> que;
+        if (root != nullptr) {
+            que.push(root);
+        }
+        while (!que.empty()) {
+            int num = que.size();
+            res.push_back(que.back()->val);
+            while (num--) {
+                TreeNode* it = que.front();
+                que.pop();
+                if (it->left != nullptr) {
+                    que.push(it->left);
+                }
+                if (it->right != nullptr) {
+                    que.push(it->right);
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 47 二叉树剪枝 */
+/* 深度优先搜索 */
+/* 注意在搜索的同时进行剪枝 */
+/* 避免两次搜索 */
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left),
+ * right(right) {}
+ * };
+ */
+class Solution {
+public:
+    bool isAviable(TreeNode* root) {
+        if (root == nullptr) {
+            return false;
+        }
+        bool left = isAviable(root->left);
+        bool right = isAviable(root->right);
+        if (!left) {
+            root->left = nullptr;
+        }
+        if (!right) {
+            root->right = nullptr;
+        }
+        return left || right || root->val == 1;
+    }
+    TreeNode* pruneTree(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        return isAviable(root) ? root : nullptr;
+    }
+};
+/* 深度优先搜索 */
+/* 后序遍历 */
+class Solution {
+public:
+    TreeNode* pruneTree(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        root->left = pruneTree(root->left);
+        root->right = pruneTree(root->right);
+        if (root->val == 0 && root->left == nullptr && root->right == nullptr) {
+            return nullptr;
+        }
+        return root;
+    }
 };
