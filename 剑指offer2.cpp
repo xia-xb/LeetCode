@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-20 23:54:51
+ * @LastEditTime: 2021-08-22 23:55:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -397,5 +397,157 @@ public:
             return nullptr;
         }
         return root;
+    }
+};
+
+/* 48 序列化与反序列化二叉树 */
+/* 深度优先搜索 */
+class Codec {
+public:
+    void dfs(TreeNode* root, string& s) {
+        if (root == NULL) {
+            s += "null,";
+        } else {
+            s += to_string(root->val) + ',';
+            dfs(root->left, s);
+            dfs(root->right, s);
+        }
+    }
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string res;
+        dfs(root, res);
+        return res;
+    }
+
+    TreeNode* deser(queue<string>& que) {
+        if (que.empty() || que.front() == "null") {
+            que.pop();
+            return NULL;
+        }
+        TreeNode* root = new TreeNode(stoi(que.front()));
+        que.pop();
+        root->left = deser(que);
+        root->right = deser(que);
+        return root;
+    }
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty()) {
+            return NULL;
+        }
+        queue<string> que;
+        string str;
+        for (int i = 0; i < data.size(); i++) {
+            if (data[i] == ',') {
+                que.push(str);
+                str.clear();
+            } else {
+                str += data[i];
+            }
+        }
+        if (!str.empty()) {
+            que.push(str);
+            str.clear();
+        }
+        return deser(que);
+    }
+};
+/* 广度优先搜索 */
+class Codec {
+public:
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string res;
+        if (root == NULL) {
+            return res;
+        }
+        queue<TreeNode*> que;
+        que.push(root);
+        while (!que.empty()) {
+            TreeNode* it = que.front();
+            que.pop();
+            if (it == NULL) {
+                res += "null,";
+            } else {
+                res += to_string(it->val) + ',';
+                que.push(it->left);
+                que.push(it->right);
+            }
+        }
+        return res;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty()) {
+            return NULL;
+        }
+        queue<string> que;
+        string str;
+        for (int i = 0; i < data.size(); i++) {
+            if (data[i] == ',') {
+                que.push(str);
+                str.clear();
+            } else {
+                str += data[i];
+            }
+        }
+        if (!str.empty()) {
+            que.push(str);
+            str.clear();
+        }
+        TreeNode* root = new TreeNode(stoi(que.front()));
+        que.pop();
+        queue<TreeNode*> res;
+        res.push(root);
+        while (!res.empty()) {
+            TreeNode* it = res.front();
+            res.pop();
+            if (que.front() != "null") {
+                TreeNode* left = new TreeNode(stoi(que.front()));
+                it->left = left;
+                res.push(left);
+            }
+            que.pop();
+            if (que.front() != "null") {
+                TreeNode* right = new TreeNode(stoi(que.front()));
+                it->right = right;
+                res.push(right);
+            }
+            que.pop();
+        }
+        return root;
+    }
+};
+
+/* 49 从根节点到叶节点的路径数字之和 */
+/* 深度优先搜索 */
+/* 注意结果保存在公共变量中 */
+class Solution {
+public:
+    int res;
+    void dfs(TreeNode* root, int sum) {
+        if (root == nullptr) {
+            res += sum;
+            return;
+        }
+        sum *= 10;
+        sum += root->val;
+        if (root->left != nullptr) {
+            dfs(root->left, sum);
+        }
+        if (root->right != nullptr) {
+            dfs(root->right, sum);
+        }
+        if (root->left == nullptr && root->right == nullptr) {
+            res += sum;
+            return;
+        }
+    }
+    int sumNumbers(TreeNode* root) {
+        res = 0;
+        dfs(root, 0);
+        return res;
     }
 };
