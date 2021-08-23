@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-22 23:55:19
+ * @LastEditTime: 2021-08-24 00:23:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -548,6 +548,80 @@ public:
     int sumNumbers(TreeNode* root) {
         res = 0;
         dfs(root, 0);
+        return res;
+    }
+};
+/* 另一种写法 */
+class Solution {
+public:
+    int dfs(TreeNode* root, int path) {
+        if (root == nullptr) {
+            return 0;
+        }
+        path *= 10;
+        path += root->val;
+        if (root->left == nullptr && root->right == nullptr) {
+            return path;
+        }
+        return dfs(root->left, path) + dfs(root->right, path);
+    }
+    int sumNumbers(TreeNode* root) { return dfs(root, 0); }
+};
+
+/* 50 向下的路径节点之和 */
+/* 前缀和，深度优先搜索 */
+class Solution {
+public:
+    int dfs(TreeNode* root, int path, int target, unordered_map<int, int>& mp) {
+        if (root == nullptr) {
+            return 0;
+        }
+        path += root->val;
+        int res = 0;
+        if (mp.count(path - target)) {
+            res += mp[path - target];
+        }
+        mp[path]++;
+        res += dfs(root->left, path, target, mp);
+        res += dfs(root->right, path, target, mp);
+        mp[path]--;
+        return res;
+    }
+    int pathSum(TreeNode* root, int targetSum) {
+        unordered_map<int, int> mp;
+        mp[0] = 1;
+        return dfs(root, 0, targetSum, mp);
+    }
+};
+
+/* 52 展平二叉搜索树 */
+/* 中序遍历，设置pre节点 */
+class Solution {
+public:
+    TreeNode* increasingBST(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        stack<TreeNode*> stk;
+        TreeNode *it = root, *pre = nullptr;
+        TreeNode* res = nullptr;
+        while (!stk.empty() || it != nullptr) {
+            while (it != nullptr) {
+                stk.push(it);
+                it = it->left;
+            }
+            it = stk.top();
+            stk.pop();
+            if (pre == nullptr) {
+                res = it;
+                pre = it;
+            } else {
+                pre->right = it;
+                it->left = nullptr;
+                pre = it;
+            }
+            it = it->right;
+        }
         return res;
     }
 };
