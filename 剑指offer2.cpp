@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-24 00:23:11
+ * @LastEditTime: 2021-08-24 23:17:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -623,5 +623,403 @@ public:
             it = it->right;
         }
         return res;
+    }
+};
+
+/* 53 二叉搜索树中的中序后继 */
+/* 深度优先搜索 */
+/* 迭代方法 */
+class Solution {
+public:
+    TreeNode* inorderSuccessor(TreeNode* root, TreeNode* p) {
+        if (root == NULL || p == NULL) {
+            return NULL;
+        }
+        stack<TreeNode*> stk;
+        TreeNode* pre = NULL;
+        while (!stk.empty() || root != NULL) {
+            while (root != NULL) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            if (pre == p) {
+                return root;
+            }
+            pre = root;
+            root = root->right;
+        }
+        return NULL;
+    }
+};
+
+/* 54 所有大于等于节点的值之和 */
+/* 中序遍历 */
+/* 遍历两次，第一次遍历统计所有节点之和 */
+class Solution {
+public:
+    int Sum(TreeNode* root) {
+        if (root == nullptr) {
+            return 0;
+        }
+        return root->val + Sum(root->left) + Sum(root->right);
+    }
+
+    void dfs(TreeNode* root, int& sum) {
+        if (root == nullptr) {
+            return;
+        }
+        dfs(root->left, sum);
+        int tmp = root->val;
+        root->val = sum;
+        sum -= tmp;
+        dfs(root->right, sum);
+    }
+    TreeNode* convertBST(TreeNode* root) {
+        int sum = Sum(root);
+        dfs(root, sum);
+        return root;
+    }
+};
+/* 深度优先搜索 */
+/* 设置变量保存节点之和 */
+/* 与中序遍历不同，先遍历右子树 */
+/* 改变根节点的值 */
+/* 之后再遍历左子树 */
+class Solution {
+public:
+    int sum = 0;
+    TreeNode* convertBST(TreeNode* root) {
+        if (root == nullptr) {
+            return nullptr;
+        }
+        convertBST(root->right);
+        sum += root->val;
+        root->val = sum;
+        convertBST(root->left);
+        return root;
+    }
+};
+
+/* 55 二叉搜索树迭代器 */
+/* 中序遍历，迭代方法 */
+/* 通过栈存储节点 */
+class BSTIterator {
+public:
+    TreeNode* rt;
+    stack<TreeNode*> stk;
+    BSTIterator(TreeNode* root) {
+        rt = root;
+        while (rt != nullptr) {
+            stk.push(rt);
+            rt = rt->left;
+        }
+    }
+
+    int next() {
+        rt = stk.top();
+        stk.pop();
+        int res = rt->val;
+        rt = rt->right;
+        while (rt != nullptr) {
+            stk.push(rt);
+            rt = rt->left;
+        }
+        return res;
+    }
+
+    bool hasNext() { return !stk.empty(); }
+};
+
+/**
+ * Your BSTIterator object will be instantiated and called as such:
+ * BSTIterator* obj = new BSTIterator(root);
+ * int param_1 = obj->next();
+ * bool param_2 = obj->hasNext();
+ */
+/* 优化代码 */
+class BSTIterator {
+public:
+    TreeNode* rt;
+    stack<TreeNode*> stk;
+    BSTIterator(TreeNode* root) { rt = root; }
+
+    int next() {
+        while (rt != nullptr) {
+            stk.push(rt);
+            rt = rt->left;
+        }
+        rt = stk.top();
+        stk.pop();
+        int res = rt->val;
+        rt = rt->right;
+        return res;
+    }
+
+    bool hasNext() { return !stk.empty() || rt != nullptr; }
+};
+
+/* 56 二叉搜索树中两个节点之和 */
+/* 中序遍历 */
+/* set存储所有节点的值 */
+class Solution {
+public:
+    bool findTarget(TreeNode* root, int k) {
+        if (root == nullptr) {
+            return false;
+        }
+        unordered_set<int> st;
+        stack<TreeNode*> stk;
+        while (!stk.empty() || root != nullptr) {
+            while (root != nullptr) {
+                stk.push(root);
+                root = root->left;
+            }
+            root = stk.top();
+            stk.pop();
+            if (st.count(k - root->val)) {
+                return true;
+            }
+            st.insert(root->val);
+            root = root->right;
+        }
+        return false;
+    }
+};
+
+/* 59 数据流的第K大数值 */
+/* 优先队列，最小堆存储前K个数据 */
+class KthLargest {
+public:
+    priority_queue<int, vector<int>, greater<int>> que;
+    int capacity;
+    KthLargest(int k, vector<int>& nums) {
+        capacity = k;
+        if (nums.empty()) {
+            return;
+        }
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        for (int i = 0; i < k && n - i - 1 >= 0; i++) {
+            que.push(nums[n - i - 1]);
+        }
+    }
+
+    int add(int val) {
+        if (que.size() < capacity) {
+            que.push(val);
+            return que.top();
+        }
+        if (val <= que.top()) {
+            return que.top();
+        }
+        que.pop();
+        que.push(val);
+        return que.top();
+    }
+};
+
+/**
+ * Your KthLargest object will be instantiated and called as such:
+ * KthLargest* obj = new KthLargest(k, nums);
+ * int param_1 = obj->add(val);
+ */
+/* 简化代码 */
+class KthLargest {
+public:
+    priority_queue<int, vector<int>, greater<int>> que;
+    int capacity;
+    KthLargest(int k, vector<int>& nums) {
+        capacity = k;
+        for (int i = 0; i < nums.size(); i++) {
+            que.push(nums[i]);
+        }
+    }
+
+    int add(int val) {
+        que.push(val);
+        while (que.size() > capacity) {
+            que.pop();
+        }
+        return que.top();
+    }
+};
+
+/* 6 排序数组中两个数字之和 */
+/* 双指针 */
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& numbers, int target) {
+        int left = 0, right = numbers.size() - 1;
+        while (left < right) {
+            int val = numbers[left] + numbers[right];
+            if (val == target) {
+                return {left, right};
+            } else if (val < target) {
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return {-1, -1};
+    }
+};
+
+/* 7 数组中和为0的三个数 */
+/* 双指针 */
+/* 注意每一层中同一个元素只能使用一次，从而避免重复 */
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> res;
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        for (int i = 0; i < n - 2; i++) {
+            if (i >= 1 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int target = -nums[i];
+            if (nums[i + 1] + nums[i + 2] > target ||
+                nums[n - 1] + nums[n - 2] < target) {
+                continue;
+            }
+            int left = i + 1, right = n - 1;
+            while (left < right) {
+                int val = nums[left] + nums[right];
+                if (val == target) {
+                    int tmp = nums[left];
+                    res.push_back({-target, nums[left], nums[right]});
+                    while (left < right && nums[left] == tmp) {
+                        left++;
+                    }
+                } else if (val < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+        return res;
+    }
+};
+/* 简化部分代码 */
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> res;
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        for (int i = 0; i < n - 2; i++) {
+            if (i >= 1 && nums[i] == nums[i - 1]) {
+                continue;
+            }
+            int target = -nums[i];
+            if (nums[i + 1] + nums[i + 2] > target ||
+                nums[n - 1] + nums[n - 2] < target) {
+                continue;
+            }
+            int left = i + 1, right = n - 1;
+            while (left < right) {
+                int val = nums[left] + nums[right];
+                if (val == target) {
+                    res.push_back({-target, nums[left], nums[right]});
+                    left++;
+                    while (left < right && nums[left] == nums[left - 1]) {
+                        left++;
+                    }
+                } else if (val < target) {
+                    left++;
+                } else {
+                    right--;
+                }
+            }
+        }
+        return res;
+    }
+};
+
+/* 14 字符串中的变位词 */
+/* 定长滑动窗口 */
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int n = s1.size();
+        unordered_map<char, int> needs;
+        unordered_map<char, int> window;
+        for (int i = 0; i < n; i++) {
+            needs[s1[i]]++;
+        }
+        int match = 0, length = needs.size();
+        for (int i = 0; i < n - 1 && i < s2.size(); i++) {
+            char c = s2[i];
+            if (needs.count(c)) {
+                window[c]++;
+                if (window[c] == needs[c]) {
+                    match++;
+                }
+            }
+        }
+        for (int i = n - 1; i < s2.size(); i++) {
+            char c = s2[i];
+            if (needs.count(c)) {
+                window[c]++;
+                if (window[c] == needs[c]) {
+                    match++;
+                    if (match == length) {
+                        return true;
+                    }
+                }
+            }
+            c = s2[i - n + 1];
+            if (window.count(c)) {
+                if (window[c] == needs[c]) {
+                    match--;
+                }
+                window[c]--;
+            }
+        }
+        return false;
+    }
+};
+/* 只使用一个map */
+class Solution {
+public:
+    bool checkInclusion(string s1, string s2) {
+        int n = s1.size();
+        unordered_map<char, int> needs;
+        for (int i = 0; i < n; i++) {
+            needs[s1[i]]++;
+        }
+        int match = 0, length = needs.size();
+        for (int i = 0; i < n - 1 && i < s2.size(); i++) {
+            char c = s2[i];
+            if (needs.count(c)) {
+                needs[c]--;
+                if (needs[c] == 0) {
+                    match++;
+                }
+            }
+        }
+        for (int i = n - 1; i < s2.size(); i++) {
+            char c = s2[i];
+            if (needs.count(c)) {
+                needs[c]--;
+                if (needs[c] == 0) {
+                    match++;
+                    if (match == length) {
+                        return true;
+                    }
+                }
+            }
+            c = s2[i - n + 1];
+            if (needs.count(c)) {
+                if (needs[c] == 0) {
+                    match--;
+                }
+                needs[c]++;
+            }
+        }
+        return false;
     }
 };
