@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-24 23:17:49
+ * @LastEditTime: 2021-08-26 20:38:36
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -1021,5 +1021,228 @@ public:
             }
         }
         return false;
+    }
+};
+
+/* 18 有效的回文 */
+/* 双指针 */
+/* 注意区分字母和数字 */
+class Solution {
+public:
+    bool isAviable(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+               (c >= '0' && c <= '9');
+    }
+    bool isChar(char c) {
+        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+    int toNum(char c) {
+        if (c >= 'a' && c <= 'z') {
+            return c - 'a';
+        } else if (c >= 'A' && c <= 'Z') {
+            return c - 'A';
+        }
+        return c - '0';
+    }
+    bool isPalindrome(string s) {
+        int left = 0, right = s.size() - 1;
+        while (left < right) {
+            while (left < right && !isAviable(s[left])) {
+                left++;
+            }
+            while (left < right && !isAviable(s[right])) {
+                right--;
+            }
+            char c1 = s[left++], c2 = s[right--];
+            if (isChar(c1) ^ isChar(c2) || toNum(c1) != toNum(c2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+};
+
+/* 19 最多删除一个字符得到回文 */
+/* 双指针，递归 */
+class Solution {
+public:
+    bool isPalindrome(string& s, int left, int right, bool flag) {
+        if (left >= right) {
+            return true;
+        }
+        return s[left] == s[right]
+                   ? isPalindrome(s, left + 1, right - 1, flag)
+                   : flag && (isPalindrome(s, left + 1, right, false) ||
+                              isPalindrome(s, left, right - 1, false));
+    }
+    bool validPalindrome(string s) {
+        return isPalindrome(s, 0, s.size() - 1, true);
+    }
+};
+
+/* 21 删除链表的倒数第n个节点 */
+/* 双指针 */
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode* newhead = new ListNode(0, head);
+        ListNode *p = newhead, *q = newhead;
+        while (n-- >= 0) {
+            p = p->next;
+        }
+        while (p != nullptr) {
+            p = p->next;
+            q = q->next;
+        }
+        q->next = q->next->next;
+        return newhead->next;
+    }
+};
+
+/* 22 链表中环的入口节点 */
+/* 双指针 */
+class Solution {
+public:
+    ListNode* detectCycle(ListNode* head) {
+        ListNode *p = head, *q = head;
+        while (q != nullptr) {
+            q = q->next;
+            if (q != nullptr) {
+                q = q->next;
+            }
+            p = p->next;
+            if (p == q) {
+                break;
+            }
+        }
+        if (q == nullptr) {
+            return nullptr;
+        }
+        p = head;
+        while (p != q) {
+            p = p->next;
+            q = q->next;
+        }
+        return p;
+    }
+};
+
+/* 23 两个链表的第一个重合节点 */
+/* 双指针 */
+class Solution {
+public:
+    ListNode* getIntersectionNode(ListNode* headA, ListNode* headB) {
+        ListNode *p = headA, *q = headB;
+        while (p != NULL && q != NULL) {
+            p = p->next;
+            q = q->next;
+        }
+        if (p == NULL) {
+            p = headB;
+            while (q != NULL) {
+                p = p->next;
+                q = q->next;
+            }
+            q = headA;
+        } else {
+            q = headA;
+            while (p != NULL) {
+                p = p->next;
+                q = q->next;
+            }
+            p = headB;
+        }
+        while (p != NULL && q != NULL && p != q) {
+            p = p->next;
+            q = q->next;
+        }
+        return p;
+    }
+};
+
+/* 26 重排链表 */
+/* 双指针 */
+/* 先将链表分为两个子链表 */
+/* 后一个链表反序 */
+/* 两个链表合并 */
+/* 注意链表长度为1和2的情况 */
+class Solution {
+public:
+    void reorderList(ListNode* head) {
+        if (head->next == nullptr || head->next->next == nullptr) {
+            return;
+        }
+        ListNode *p = head, *q = head;
+        while (q != nullptr && q->next != nullptr) {
+            p = p->next;
+            q = q->next->next;
+        }
+        q = p->next;
+        p->next = nullptr;
+        p = q->next;
+        q->next = nullptr;
+        while (p != nullptr) {
+            ListNode* tmp = p->next;
+            p->next = q;
+            q = p;
+            p = tmp;
+        }
+        p = head;
+        while (q != nullptr) {
+            ListNode* tmp = q->next;
+            q->next = p->next;
+            p->next = q;
+            p = p->next->next;
+            q = tmp;
+        }
+    }
+};
+
+/* 77 链表排序 */
+/* 链表归并排序 */
+class Solution {
+public:
+    ListNode* sortList(ListNode* head) { return sortList(head, nullptr); }
+
+    ListNode* sortList(ListNode* head, ListNode* tail) {
+        if (head == nullptr) {
+            return nullptr;
+        }
+        if (head->next == tail) {
+            head->next = nullptr;
+            return head;
+        }
+        ListNode *fast = head, *slow = head;
+        while (fast != tail) {
+            slow = slow->next;
+            fast = fast->next;
+            if (fast != tail) {
+                fast = fast->next;
+            }
+        }
+        ListNode* mid = slow;
+        return merge(sortList(head, mid), sortList(mid, tail));
+    }
+
+    ListNode* merge(ListNode* head1, ListNode* head2) {
+        ListNode* newhead = new ListNode();
+        ListNode* tail = newhead;
+        while (head1 != nullptr && head2 != nullptr) {
+            if (head1->val <= head2->val) {
+                tail->next = head1;
+                head1 = head1->next;
+            } else {
+                tail->next = head2;
+                head2 = head2->next;
+            }
+            tail = tail->next;
+        }
+        if (head1 != nullptr) {
+            tail->next = head1;
+        }
+        if (head2 != nullptr) {
+            tail->next = head2;
+        }
+        return newhead->next;
     }
 };
