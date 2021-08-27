@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 20:07:13
- * @LastEditTime: 2021-08-21 21:25:47
+ * @LastEditTime: 2021-08-27 22:34:41
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/动态规划.cpp
@@ -296,5 +296,59 @@ public:
             }
         }
         return s.substr(begin, maxLen);
+    }
+};
+
+/* 516 最长回文子序列 */
+/* 动态规划 */
+/* 从下到上，从左到右遍历 */
+/* 注意不相等时，取dp[i+1][j],dp[i][j-1] */
+/* 较大的，即将s[i],s[j]分别加入dp[i+1][j-1]中 */
+/* 得到较长的回文子序列 */
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 1;
+        }
+        int res = 1;
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                if (s[i] == s[j]) {
+                    if (j - i + 1 <= 3) {
+                        dp[i][j] = j - i + 1;
+                    } else {
+                        dp[i][j] = dp[i + 1][j - 1] + 2;
+                    }
+                } else {
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+                }
+                res = max(res, dp[i][j]);
+            }
+        }
+        return res;
+    }
+};
+/* 由于不合法位置初始化为0，所以可以不考虑dp[i+1][j-1]不合法情况 */
+class Solution {
+public:
+    int longestPalindromeSubseq(string s) {
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(n, 0));
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = 1;
+        }
+        for (int i = n - 1; i >= 0; i--) {
+            for (int j = i + 1; j < n; j++) {
+                if (s[i] == s[j]) {
+                    dp[i][j] = dp[i + 1][j - 1] + 2;
+                } else {
+                    dp[i][j] = max(dp[i + 1][j], dp[i][j - 1]);
+                }
+            }
+        }
+        return dp[0][n - 1];
     }
 };
