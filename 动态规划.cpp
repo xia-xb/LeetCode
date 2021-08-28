@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 20:07:13
- * @LastEditTime: 2021-08-27 22:34:41
+ * @LastEditTime: 2021-08-28 16:13:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/动态规划.cpp
@@ -350,5 +350,65 @@ public:
             }
         }
         return dp[0][n - 1];
+    }
+};
+
+/* 1140 石子游戏II */
+/* 动态规划 */
+/* dp[i][m]，从i开始，最多m堆 */
+/* 注意问题转换 */
+/* 状态转换时，取对手在剩下中取最少的 */
+class Solution {
+public:
+    int stoneGameII(vector<int>& piles) {
+        int n = piles.size();
+        vector<vector<int>> dp(n, vector<int>(n + 1, 0));
+        int sum = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            sum += piles[i];
+            for (int m = 1; m <= n; m++) {
+                if (i + 2 * m >= n) {
+                    dp[i][m] = sum;
+                } else {
+                    for (int j = 1; j <= 2 * m; j++) {
+                        dp[i][m] = max(dp[i][m], sum - dp[i + j][max(j, m)]);
+                    }
+                }
+            }
+        }
+        return dp[0][1];
+    }
+};
+
+/* 1406 石子游戏III */
+/* 动态规划 */
+/* dp[i] i~n先手能获得最多石子数 */
+/* 后缀和，减去对手能在剩下的获得最少的石子即可 */
+class Solution {
+public:
+    string stoneGameIII(vector<int>& stoneValue) {
+        int n = stoneValue.size();
+        vector<int> sum(n);
+        int total = stoneValue[n - 1];
+        sum[n - 1] = stoneValue[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            sum[i] = sum[i + 1] + stoneValue[i];
+            total += stoneValue[i];
+        }
+
+        vector<int> dp(n + 1);
+        dp[n] = 0;
+        for (int i = n - 1; i >= 0; i--) {
+            int bestj = dp[i + 1];
+            for (int j = i + 2; j <= i + 3 && j <= n; j++) {
+                bestj = min(bestj, dp[j]);
+            }
+            dp[i] = sum[i] - bestj;
+        }
+        if (dp[0] * 2 == total) {
+            return "Tie";
+        } else {
+            return dp[0] * 2 > total ? "Alice" : "Bob";
+        }
     }
 };
