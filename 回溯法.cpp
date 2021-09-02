@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-22 22:09:13
- * @LastEditTime: 2021-05-28 22:51:08
+ * @LastEditTime: 2021-09-01 13:10:56
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\回溯法.cpp
@@ -735,5 +735,51 @@ public:
         vector<int> path;
         trackback(nums, path, 0);
         return res;
+    }
+};
+
+/* 37 解数独 */
+/* 回溯法 */
+class Solution {
+public:
+    bool row[9][9];
+    bool col[9][9];
+    bool box[3][3][9];
+    vector<pair<int, int>> space;
+    bool valid;
+
+    void dfs(vector<vector<char>>& board, int pos) {
+        if (pos == space.size()) {
+            valid = true;
+            return;
+        }
+        auto [i, j] = space[pos];
+        for (int digit = 0; digit < 9 && !valid; digit++) {
+            if (!row[i][digit] && !col[j][digit] && !box[i / 3][j / 3][digit]) {
+                row[i][digit] = col[j][digit] = box[i / 3][j / 3][digit] = true;
+                board[i][j] = digit + '0' + 1;
+                dfs(board, pos + 1);
+                row[i][digit] = col[j][digit] = box[i / 3][j / 3][digit] =
+                    false;
+            }
+        }
+    }
+    void solveSudoku(vector<vector<char>>& board) {
+        memset(row, false, sizeof(row));
+        memset(col, false, sizeof(col));
+        memset(box, false, sizeof(box));
+        valid = false;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] == '.') {
+                    space.push_back({i, j});
+                } else {
+                    int digit = board[i][j] - '0' - 1;
+                    row[i][digit] = col[j][digit] = box[i / 3][j / 3][digit] =
+                        true;
+                }
+            }
+        }
+        dfs(board, 0);
     }
 };

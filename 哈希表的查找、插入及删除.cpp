@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-05-14 23:09:46
- * @LastEditTime: 2021-05-16 22:20:14
+ * @LastEditTime: 2021-09-01 12:20:19
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \LeetCode\哈希表的查找、插入及删除.cpp
@@ -259,6 +259,96 @@ public:
             }
             mp1[c1] = c2;
             mp2[c2] = c1;
+        }
+        return true;
+    }
+};
+
+/* 36 有效的数独 */
+/* 暴力方法 */
+class Solution {
+public:
+    bool isValid(vector<vector<char>>& board, int row, int col) {
+        char c = board[row][col];
+        for (int i = 0; i < 9; i++) {
+            if (i != row && board[i][col] == c) {
+                return false;
+            }
+            if (i != col && board[row][i] == c) {
+                return false;
+            }
+        }
+        int rowStart = row / 3 * 3, colStart = col / 3 * 3;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                int x = i + rowStart, y = j + colStart;
+                if (x != row && y != col && board[x][y] == c) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    bool isValidSudoku(vector<vector<char>>& board) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.' && !isValid(board, i, j)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};
+/* 哈希表 */
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        vector<unordered_set<char>> row(9, unordered_set<char>());
+        vector<unordered_set<char>> col(9, unordered_set<char>());
+        vector<unordered_set<char>> box(9, unordered_set<char>());
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                char c = board[i][j];
+                int index = i / 3 * 3 + j / 3;
+                if (c != '.') {
+                    if (row[i].find(c) == row[i].end() &&
+                        col[j].find(c) == col[j].end() &&
+                        box[index].find(c) == box[index].end()) {
+                        row[i].insert(c);
+                        col[j].insert(c);
+                        box[index].insert(c);
+                    } else {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+};
+/* 数组替代哈希表 */
+class Solution {
+public:
+    bool isValidSudoku(vector<vector<char>>& board) {
+        vector<vector<int>> row(9, vector<int>(9, 0));
+        vector<vector<int>> col(9, vector<int>(9, 0));
+        vector<vector<int>> box(9, vector<int>(9, 0));
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                if (board[i][j] != '.') {
+                    int num = board[i][j] - '0' - 1;
+                    int index = i / 3 * 3 + j / 3;
+                    if (row[i][num] == 0 && col[j][num] == 0 &&
+                        box[index][num] == 0) {
+                        row[i][num] = 1;
+                        col[j][num] = 1;
+                        box[index][num] = 1;
+                    } else {
+                        return false;
+                    }
+                }
+            }
         }
         return true;
     }
