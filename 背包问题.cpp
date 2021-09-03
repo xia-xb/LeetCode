@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-09-02 16:35:13
- * @LastEditTime: 2021-09-02 22:33:29
+ * @LastEditTime: 2021-09-03 23:52:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/01背包.cpp
@@ -250,5 +250,55 @@ public:
             }
         }
         return dp[amount] == Max ? -1 : dp[amount];
+    }
+};
+
+/* 518 零钱兑换II */
+/* 动态规划 完全背包问题 */
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        vector<vector<int>> dp(amount + 1, vector<int>(n + 1, 0));
+        for (int i = 0; i <= n; i++) {
+            dp[0][i] = 1;
+        }
+        for (int i = 1; i <= amount; i++) {
+            for (int j = 1; j <= n; j++) {
+                int value = coins[j - 1];
+                dp[i][j] = dp[i][j - 1];
+                if (i >= value) {
+                    int allValue = value;
+                    while (i >= allValue) {
+                        dp[i][j] += dp[i - allValue][j - 1];
+                        allValue += value;
+                    }
+                }
+            }
+        }
+        return dp[amount][n];
+    }
+};
+/* 一维dp数组 */
+/* 注意内外循环变量 */
+/* 外循环为硬币面额，内循环为总金额 */
+/* 从而确定了硬币添加顺序，避免重复情况 */
+/* 若外循环为总金额，内循环为硬币面额 */
+/* 则会出现重复情况 */
+/* 因为这样对于dp[i]会存在包含coins各种硬币 */
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        vector<int> dp(amount + 1, 0);
+        dp[0] = 1;
+        for (int value : coins) {
+            for (int i = 1; i <= amount; i++) {
+                if (i >= value) {
+                    dp[i] += dp[i - value];
+                }
+            }
+        }
+        return dp[amount];
     }
 };
