@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-09-02 16:35:13
- * @LastEditTime: 2021-09-03 23:52:34
+ * @LastEditTime: 2021-09-04 22:49:11
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/01背包.cpp
@@ -300,5 +300,39 @@ public:
             }
         }
         return dp[amount];
+    }
+};
+
+/* 1449 数位成本和为目标值的最大数字 */
+/* 动态规划 完全背包问题*/
+/* 重点结果保存字符串 */
+/* 注意字符串比较大小，首先需要判断长度是否相等 */
+/* 同时设置"-1"标记为不能得到整数 */
+/* 此时需要特殊判断，因为长度特殊 */
+class Solution {
+public:
+    string largestNumber(vector<int>& cost, int target) {
+        int n = cost.size();
+        vector<string> dp(target + 1, "-1");
+        dp[0] = "";
+        for (int i = 1; i <= target; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i >= cost[j] && dp[i - cost[j]] != "-1") {
+                    string s;
+                    s = dp[i - cost[j]] + to_string(j + 1);
+                    int len1 = dp[i].size(), len2 = s.size();
+                    if (dp[i] == "-1") {
+                        dp[i] = s;
+                    } else {
+                        if (len1 == len2) {
+                            dp[i] = max(dp[i], s);
+                        } else {
+                            dp[i] = len1 > len2 ? dp[i] : s;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[target] == "-1" ? "0" : dp[target];
     }
 };
