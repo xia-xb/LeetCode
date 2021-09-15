@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2021-08-18 23:31:07
- * @LastEditTime: 2021-08-26 20:38:36
+ * @LastEditTime: 2021-09-15 23:52:50
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /LeetCode/剑指offer2.cpp
@@ -1244,5 +1244,88 @@ public:
             tail->next = head2;
         }
         return newhead->next;
+    }
+};
+
+/* 28 展平多级双向链表 */
+/* 深度优先搜索，返回尾节点 */
+/* 保存next，chlid */
+/* 分别对两者不为空进行递归 */
+/* 注意返回尾节点的child需要置为空 */
+/*
+// Definition for a Node.
+class Node {
+public:
+    int val;
+    Node* prev;
+    Node* next;
+    Node* child;
+};
+*/
+
+class Solution {
+public:
+    Node* dfs(Node* head) {
+        if (head == NULL || (head->next == NULL && head->child == NULL)) {
+            return head;
+        }
+        Node* next = head->next;
+        Node* child = head->child;
+        Node* tail = head;
+        if (child != NULL) {
+            head->child = NULL;
+            head->next = child;
+            child->prev = head;
+            tail = dfs(child);
+            tail->child = NULL;
+        }
+        if (next != NULL) {
+            tail->next = next;
+            next->prev = tail;
+            tail = dfs(next);
+        }
+        tail->child = NULL;
+        return tail;
+    }
+    Node* flatten(Node* head) {
+        Node* tail = dfs(head);
+        return head;
+    }
+};
+
+/* 105 岛屿的最大面积 */
+/* 105 深度优先搜索 */
+class Solution {
+public:
+    int dx[4] = {0, 0, 1, -1};
+    int dy[4] = {-1, 1, 0, 0};
+    int xRange, yRange;
+    int res;
+    void dfs(vector<vector<int>>& grid, int row, int col, int& area) {
+        if (row < 0 || row >= xRange || col < 0 || col >= yRange ||
+            grid[row][col] == 0) {
+            res = max(res, area);
+            return;
+        }
+        grid[row][col] = 0;
+        area += 1;
+        for (int i = 0; i < 4; i++) {
+            int x = row + dx[i], y = col + dy[i];
+            dfs(grid, x, y, area);
+        }
+    }
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        res = 0;
+        xRange = grid.size(), yRange = grid[0].size();
+        int area;
+        for (int i = 0; i < xRange; i++) {
+            for (int j = 0; j < yRange; j++) {
+                if (grid[i][j] == 1) {
+                    area = 0;
+                    dfs(grid, i, j, area);
+                }
+            }
+        }
+        return res;
     }
 };
